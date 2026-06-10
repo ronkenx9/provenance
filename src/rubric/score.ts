@@ -62,10 +62,13 @@ export function scoreLiquidity(i: LiquidityInputs): { score: number; factors: st
   else if (i.depthToExit100kBps > 100) { s -= 15; factors.push(`-15 exit $100k costs ${i.depthToExit100kBps}bps`); }
   else factors.push(`exit $100k at ${i.depthToExit100kBps}bps (neutral)`);
   // Volume: 7d volume >= 10% of TVL +5 (alive), < 1% -10 (stagnant).
-  const volPct = i.dexTvlUsd > 0 ? (i.vol7dUsd / i.dexTvlUsd) * 100 : 0;
-  if (volPct >= 10) { s += 5; factors.push(`+5 active volume (7d = ${volPct.toFixed(0)}% of TVL)`); }
-  else if (volPct < 1) { s -= 10; factors.push(`-10 stagnant volume (7d = ${volPct.toFixed(1)}% of TVL)`); }
-  else factors.push(`volume neutral (7d = ${volPct.toFixed(0)}% of TVL)`);
+  if (i.vol7dUsd === undefined) factors.push("volume data unavailable from source — no volume adjustment (R4: logged, not defaulted)");
+  else {
+    const volPct = i.dexTvlUsd > 0 ? (i.vol7dUsd / i.dexTvlUsd) * 100 : 0;
+    if (volPct >= 10) { s += 5; factors.push(`+5 active volume (7d = ${volPct.toFixed(0)}% of TVL)`); }
+    else if (volPct < 1) { s -= 10; factors.push(`-10 stagnant volume (7d = ${volPct.toFixed(1)}% of TVL)`); }
+    else factors.push(`volume neutral (7d = ${volPct.toFixed(0)}% of TVL)`);
+  }
   return { score: clamp(s), factors };
 }
 

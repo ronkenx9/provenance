@@ -11,7 +11,7 @@ import type { RubricInputs } from "../rubric/types.js";
 
 export interface ProbeData {
   // P2 fills these from on-chain / explorer / DEX sources.
-  liquidity?: { dexTvlUsd: number; marketCapUsd: number; vol7dUsd: number; depthToExit100kBps: number };
+  liquidity?: { dexTvlUsd: number; marketCapUsd: number; vol7dUsd?: number; depthToExit100kBps: number };
   top10HolderPct?: number;
   contractsVerified?: boolean;
 }

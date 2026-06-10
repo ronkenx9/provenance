@@ -1,0 +1,20 @@
+{
+  "assetId": "usde",
+  "address": "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34",
+  "fetchedAt": "2026-06-10T10:03:50.579Z",
+  "totalSupply": 112808939.560804,
+  "priceUsd": 0.999221546720037,
+  "marketCapUsd": 112721123.07179375,
+  "dexTvlUsd": 28306410.541716095,
+  "dexPoolCount": 20,
+  "largestPoolTvlUsd": 6254939.5857,
+  "depthToExit100kBps": 320,
+  "contractsVerifiedSourcify": true,
+  "top10HolderPct": null,
+  "notes": [
+    "marketCap = Mantle-chain supply x price (chain-local cap, not global)",
+    "dex pools via GeckoTerminal (top 20): aggregate 24h volume $1,060,890 (7d volume not provided -> vol adjustment skipped)",
+    "depthToExit100kBps is a PROXY: constant-product impact estimate against the largest pool's TVL/2, not a routed quote",
+    "holders probe failed (explorer outage tolerated): 502 https://explorer.mantle.xyz/api/v2/tokens/0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34/holders"
+  ]
+}

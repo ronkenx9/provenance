@@ -30,7 +30,8 @@ export interface RedemptionInputs {
 export interface LiquidityInputs {
   dexTvlUsd: number;
   marketCapUsd: number;
-  vol7dUsd: number;
+  /** OPTIONAL: when the source has no per-token volume, scorer logs it and applies no volume adjustment. */
+  vol7dUsd?: number;
   /** Slippage in bps to exit a $100k position via best on-chain route. */
   depthToExit100kBps: number;
 }

@@ -1,0 +1,21 @@
+{
+  "assetId": "meth",
+  "address": "0xcDA86A272531e8640cD7F1a92c01839911B90bb0",
+  "fetchedAt": "2026-06-10T10:03:46.243Z",
+  "totalSupply": 28753.941004382847,
+  "priceUsd": 1771.0033757290514,
+  "marketCapUsd": 50923326.58427601,
+  "dexTvlUsd": 2222875.9545,
+  "dexPoolCount": 20,
+  "largestPoolTvlUsd": 1072796.3855,
+  "depthToExit100kBps": 1864,
+  "contractsVerifiedSourcify": null,
+  "top10HolderPct": null,
+  "notes": [
+    "marketCap = Mantle-chain supply x price (chain-local cap, not global)",
+    "dex pools via GeckoTerminal (top 20): aggregate 24h volume $672,033 (7d volume not provided -> vol adjustment skipped)",
+    "depthToExit100kBps is a PROXY: constant-product impact estimate against the largest pool's TVL/2, not a routed quote",
+    "Sourcify has no entry for this address (404) — verification status unknown, NOT false",
+    "holders probe failed (explorer outage tolerated): 502 https://explorer.mantle.xyz/api/v2/tokens/0xcDA86A272531e8640cD7F1a92c01839911B90bb0/holders"
+  ]
+}
