@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PROVENANCE — Risk Ratings for Tokenized Assets</title>
+  <meta name="description" content="Deterministic, on-chain-anchored risk dossiers for tokenized assets on Mantle. Machine-readable ratings that humans can read and agents can act on.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0F0F11;
+      --surface: #1E1E24;
+      --surface-border: #333340;
+      --text-1: #EEEEEF;
+      --text-2: #A0A0AB;
+      --text-3: #7A7A85;
+      --accent: #3B82F6;
+      --accent-glow: #3B82F680;
+      --accent-secondary: #F59E0B;
+      --grade-aa: #22C55E;
+      --grade-a: #3B82F6;
+      --grade-b: #F59E0B;
+      --grade-c: #EF4444;
+      --grade-d: #991B1B;
+      --unknown: #6C6C74;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-2);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+
+    h1, h2, h3 { font-family: 'Syne', sans-serif; color: var(--text-1); font-weight: 800; }
+    h1 { font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.1; }
+    h2 { font-size: clamp(1.5rem, 3vw, 2.2rem); line-height: 1.2; }
+
+    section {
+      padding: 5rem 1.5rem;
+      border-top: 1px solid var(--surface-border);
+      max-width: 72rem;
+      margin: 0 auto;
+    }
+
+    /* --- NAV --- */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: var(--bg); border-bottom: 1px solid var(--surface-border);
+      backdrop-filter: blur(12px); background: rgba(15,15,17,0.85);
+    }
+    nav .inner {
+      max-width: 72rem; margin: 0 auto; padding: 1rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand { font-family: 'Syne', sans-serif; font-weight: 800; color: var(--text-1); font-size: 1.1rem; letter-spacing: 0.05em; }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a { color: var(--text-3); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text-1); }
+
+    /* --- HERO --- */
+    .hero {
+      padding: 10rem 1.5rem 5rem;
+      max-width: 72rem; margin: 0 auto;
+      border-top: none;
+    }
+    .hero .tagline { color: var(--text-2); font-size: 1.15rem; max-width: 36rem; margin-top: 1.5rem; }
+    .hero .accent-line { color: var(--accent); }
+
+    /* --- ASSET SWITCHER --- */
+    .asset-tabs {
+      display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem;
+    }
+    .asset-tab {
+      background: var(--surface); border: 1px solid var(--surface-border);
+      color: var(--text-3); padding: 0.6rem 1.2rem; border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+      letter-spacing: 0.1em; cursor: pointer; transition: all 0.2s;
+    }
+    .asset-tab:hover { border-color: var(--text-3); color: var(--text-2); }
+    .asset-tab.active { border-color: var(--accent); color: var(--accent); background: rgba(59,130,246,0.08); }
+
+    /* --- GRADE CARD --- */
+    .grade-card {
+      background: var(--surface); border: 1px solid var(--surface-border);
+      border-radius: 12px; padding: 2rem; margin-bottom: 2rem;
+      display: grid; grid-template-columns: auto 1fr; gap: 2rem; align-items: center;
+    }
+    .grade-badge {
+      width: 5.5rem; height: 5.5rem; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--bg);
+    }
+    .grade-meta .asset-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; color: var(--text-1); }
+    .grade-meta .composite { font-family: 'JetBrains Mono', monospace; font-size: 2rem; color: var(--text-1); font-weight: 500; }
+    .grade-meta .composite small { font-size: 0.9rem; color: var(--text-3); }
+    .flags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
+    .flag {
+      background: rgba(108,108,116,0.15); border: 1px solid var(--surface-border);
+      padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace; color: var(--text-3);
+    }
+
+    /* --- DIMENSION BARS --- */
+    .dimensions { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
+    .dim-row { display: grid; grid-template-columns: 9rem 1fr 3rem; gap: 1rem; align-items: center; }
+    .dim-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+      text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-3);
+    }
+    .dim-bar-bg {
+      height: 8px; background: var(--surface); border-radius: 4px; overflow: hidden;
+      position: relative;
+    }
+    .dim-bar-fill {
+      height: 100%; border-radius: 4px; transition: width 0.6s cubic-bezier(0.22,1,0.36,1);
+    }
+    .dim-bar-fill.unknown { background: repeating-linear-gradient(45deg, var(--unknown), var(--unknown) 4px, transparent 4px, transparent 8px); opacity: 0.3; width: 100%; }
+    .dim-score {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-2); text-align: right;
+    }
+    .dim-factors {
+      grid-column: 1 / -1; padding-left: 10rem;
+      font-size: 0.78rem; color: var(--text-3); line-height: 1.5;
+    }
+
+    /* --- NARRATIVE --- */
+    .narrative-block {
+      background: var(--surface); border: 1px solid var(--surface-border);
+      border-radius: 12px; padding: 2rem; margin-bottom: 2rem;
+      font-size: 0.92rem; line-height: 1.8; color: var(--text-2);
+    }
+
+    /* --- VERIFY LINK --- */
+    .verify-link {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      color: var(--accent); text-decoration: none; font-size: 0.85rem;
+      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.05em;
+      padding: 0.5rem 1rem; border: 1px solid var(--accent);
+      border-radius: 6px; transition: all 0.2s;
+    }
+    .verify-link:hover { background: rgba(59,130,246,0.1); transform: scale(0.97); }
+
+    /* --- METHODOLOGY --- */
+    .methodology {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+      gap: 1.5rem; margin-top: 2rem;
+    }
+    .method-card {
+      background: var(--surface); border: 1px solid var(--surface-border);
+      border-radius: 12px; padding: 1.5rem;
+    }
+    .method-card h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+    .method-card p { font-size: 0.85rem; color: var(--text-3); }
+
+    /* --- FOOTER --- */
+    footer {
+      border-top: 1px solid var(--surface-border);
+      padding: 3rem 1.5rem; max-width: 72rem; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+    }
+    footer p { font-size: 0.8rem; color: var(--text-3); }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    /* --- COMPARE TABLE --- */
+    .compare-table {
+      width: 100%; border-collapse: collapse; margin-top: 2rem;
+    }
+    .compare-table th, .compare-table td {
+      padding: 0.8rem 1rem; text-align: left; border-bottom: 1px solid var(--surface-border);
+      font-size: 0.85rem;
+    }
+    .compare-table th {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+      text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-3);
+    }
+    .compare-table td { color: var(--text-2); }
+    .compare-table tr:hover td { background: rgba(59,130,246,0.03); }
+
+    @media (max-width: 640px) {
+      .grade-card { grid-template-columns: 1fr; text-align: center; }
+      .dim-row { grid-template-columns: 1fr; gap: 0.3rem; }
+      .dim-factors { padding-left: 0; }
+      .nav-links { display: none; }
+      section { padding: 3rem 1rem; }
+    }
+
+    .loading { text-align: center; padding: 4rem; color: var(--text-3); }
+  </style>
+</head>
+<body>
+
+<nav><div class="inner">
+  <span class="nav-brand">PROVENANCE</span>
+  <div class="nav-links">
+    <a href="#ratings">Ratings</a>
+    <a href="#compare">Compare</a>
+    <a href="#methodology">Methodology</a>
+  </div>
+</div></nav>
+
+<section class="hero">
+  <p class="eyebrow">AI Ratings Agency for Tokenized Assets</p>
+  <h1>Risk dossiers that<br><span class="accent-line">agents can read.</span></h1>
+  <p class="tagline">Deterministic scoring engine. On-chain anchored. Every number computed, never hallucinated. Built on Mantle.</p>
+</section>
+
+<section id="ratings">
+  <p class="eyebrow">Dossier Viewer</p>
+  <h2 style="margin-bottom:2rem">Asset Ratings</h2>
+  <div class="asset-tabs" id="asset-tabs"></div>
+  <div id="dossier-view" class="loading">Loading ratings...</div>
+</section>
+
+<section id="compare">
+  <p class="eyebrow">Side by Side</p>
+  <h2>Asset Comparison</h2>
+  <table class="compare-table" id="compare-table">
+    <thead><tr>
+      <th>Asset</th><th>Grade</th><th>Composite</th>
+      <th>Collateral</th><th>Redemption</th><th>Liquidity</th>
+      <th>Concentration</th><th>Transparency</th>
+    </tr></thead>
+    <tbody id="compare-body"></tbody>
+  </table>
+</section>
+
+<section id="methodology">
+  <p class="eyebrow">How It Works</p>
+  <h2>Anti-Hallucination Architecture</h2>
+  <p style="max-width:40rem;margin-top:1rem;margin-bottom:2rem;color:var(--text-3)">The LLM never produces a score. Scores come from a deterministic rubric with published weights and quantifiable inputs. The LLM writes only the narrative layer, and every number in the prose is validated against computed values.</p>
+  <div class="methodology">
+    <div class="method-card">
+      <h3>Deterministic Engine</h3>
+      <p>Same inputs produce the same score, every time. Five dimensions, published weights, reproducible output. No randomness, no LLM in the scoring loop.</p>
+    </div>
+    <div class="method-card">
+      <h3>On-Chain Anchored</h3>
+      <p>Every dossier is published to DossierRegistry on Mantle Sepolia. The methodology hash pins the rubric version — a scoring change is publicly visible.</p>
+    </div>
+    <div class="method-card">
+      <h3>Validated Narratives</h3>
+      <p>Plain-English explanations are generated by AI, then validated: every number must match a computed value or the narrative is rejected and regenerated.</p>
+    </div>
+    <div class="method-card">
+      <h3>Unknown, Not Default</h3>
+      <p>When data is missing, the engine flags it unknown and redistributes weight. It never silently defaults — gaps are visible in every dossier.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>PROVENANCE — Mantle Turing Test 2026</p>
+  <p><a href="https://explorer.sepolia.mantle.xyz/address/0xd1534d20006248f4c2c290F83e6377b4A06037A9" target="_blank">Verify on-chain</a></p>
+</footer>
+
+<script>
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:3000'
+  : (window.API_BASE || '');
+
+const REGISTRY = '0xd1534d20006248f4c2c290F83e6377b4A06037A9';
+const EXPLORER = 'https://explorer.sepolia.mantle.xyz';
+
+const GRADE_COLORS = { AA: '#22C55E', A: '#3B82F6', B: '#F59E0B', C: '#EF4444', D: '#991B1B' };
+
+function gradeColor(g) { return GRADE_COLORS[g] || '#6C6C74'; }
+
+function barColor(score) {
+  if (score === null) return 'var(--unknown)';
+  if (score >= 85) return '#22C55E';
+  if (score >= 70) return '#3B82F6';
+  if (score >= 50) return '#F59E0B';
+  return '#EF4444';
+}
+
+// Embedded data — no API dependency for static deploy
+const RATINGS_DATA = {
+  usdy: null, meth: null, usde: null, fbtc: null
+};
+
+async function fetchRatings() {
+  try {
+    const res = await fetch(API_BASE + '/ratings');
+    if (res.ok) {
+      const data = await res.json();
+      for (const a of data.assets) { RATINGS_DATA[a.assetId] = a; }
+    }
+  } catch {}
+
+  // Also fetch full dossiers with narratives
+  for (const id of Object.keys(RATINGS_DATA)) {
+    try {
+      const res = await fetch(API_BASE + '/rating/' + id);
+      if (res.ok) { RATINGS_DATA[id] = await res.json(); }
+    } catch {}
+  }
+}
+
+function renderTabs(activeId) {
+  const container = document.getElementById('asset-tabs');
+  container.innerHTML = '';
+  for (const id of Object.keys(RATINGS_DATA)) {
+    const d = RATINGS_DATA[id];
+    if (!d) continue;
+    const tab = document.createElement('button');
+    tab.className = 'asset-tab' + (id === activeId ? ' active' : '');
+    tab.textContent = d.symbol + ' · ' + d.grade;
+    tab.onclick = () => renderDossier(id);
+    container.appendChild(tab);
+  }
+}
+
+function renderDossier(assetId) {
+  const d = RATINGS_DATA[assetId];
+  if (!d) return;
+  renderTabs(assetId);
+
+  const gc = gradeColor(d.grade);
+  const dims = d.dimensions || [];
+
+  let html = `
+    <div class="grade-card">
+      <div class="grade-badge" style="background:${gc}">${d.grade}</div>
+      <div class="grade-meta">
+        <div class="asset-name">${d.symbol}</div>
+        <div class="composite">${d.composite}<small> / 100</small></div>
+        ${d.address ? `<div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text-3);margin-top:0.3rem">${d.address.slice(0,6)}...${d.address.slice(-4)}</div>` : ''}
+        ${d.flags && d.flags.length ? `<div class="flags">${d.flags.map(f => `<span class="flag">${f.replace(/dimension '(\w+)'/, '$1')}</span>`).join('')}</div>` : ''}
+      </div>
+    </div>
+    <div class="dimensions">
+  `;
+
+  for (const dim of dims) {
+    const isUnknown = dim.unknown;
+    const score = isUnknown ? null : dim.score;
+    const factors = dim.factors || [];
+    html += `
+      <div class="dim-row">
+        <span class="dim-label">${dim.dimension}</span>
+        <div class="dim-bar-bg">
+          <div class="dim-bar-fill ${isUnknown ? 'unknown' : ''}" style="width:${isUnknown ? '100' : score}%;background:${isUnknown ? '' : barColor(score)}"></div>
+        </div>
+        <span class="dim-score">${isUnknown ? '—' : score}</span>
+      </div>
+      ${factors.length ? `<div class="dim-factors">${factors.map(f => '· ' + f).join('<br>')}</div>` : ''}
+    `;
+  }
+  html += '</div>';
+
+  // Narrative
+  if (d.narrative) {
+    html += `
+      <p class="eyebrow" style="margin-bottom:0.8rem">Risk Narrative</p>
+      <div class="narrative-block">${d.narrative.split('\n\n').map(p => '<p style="margin-bottom:1rem">' + p + '</p>').join('')}</div>
+    `;
+  }
+
+  // Verify link
+  html += `
+    <a class="verify-link" href="${EXPLORER}/address/${REGISTRY}" target="_blank" rel="noopener">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Verify on-chain · Mantle Sepolia
+    </a>
+  `;
+
+  document.getElementById('dossier-view').innerHTML = html;
+}
+
+function renderCompare() {
+  const tbody = document.getElementById('compare-body');
+  const dimNames = ['collateral', 'redemption', 'liquidity', 'concentration', 'transparency'];
+
+  for (const id of Object.keys(RATINGS_DATA)) {
+    const d = RATINGS_DATA[id];
+    if (!d) continue;
+    const tr = document.createElement('tr');
+    const dimMap = {};
+    for (const dim of (d.dimensions || [])) { dimMap[dim.dimension] = dim; }
+
+    tr.innerHTML = `
+      <td style="font-weight:600;color:var(--text-1)">${d.symbol}</td>
+      <td><span style="color:${gradeColor(d.grade)};font-weight:700;font-family:'Syne',sans-serif">${d.grade}</span></td>
+      <td style="font-family:'JetBrains Mono',monospace">${d.composite}</td>
+      ${dimNames.map(n => {
+        const dim = dimMap[n];
+        if (!dim || dim.unknown) return '<td style="color:var(--unknown)">—</td>';
+        return `<td style="font-family:'JetBrains Mono',monospace;color:${barColor(dim.score)}">${dim.score}</td>`;
+      }).join('')}
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+// Boot
+(async () => {
+  await fetchRatings();
+  const firstId = Object.keys(RATINGS_DATA).find(id => RATINGS_DATA[id]);
+  if (firstId) {
+    renderDossier(firstId);
+    renderCompare();
+  } else {
+    document.getElementById('dossier-view').innerHTML = '<p style="color:var(--text-3)">Could not load ratings. Start the API: <code>npm run api</code></p>';
+  }
+})();
+</script>
+
+</body>
+</html>
