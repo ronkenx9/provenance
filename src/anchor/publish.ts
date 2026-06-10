@@ -69,13 +69,26 @@ export async function publishDossierOnChain(args: {
     address: args.registry, abi: REGISTRY_ABI, functionName: "publishDossier",
     args: [assetId, score, gradeBytes8(args.dossier.grade), dHash, mHash],
   });
-  await publicClient.waitForTransactionReceipt({ hash: txHash });
-  const latest = await publicClient.readContract({
-    address: args.registry, abi: REGISTRY_ABI, functionName: "latest", args: [assetId],
-  });
+  const receipt = await publicClient.waitForTransactionReceipt({ hash: txHash });
+  if (receipt.status === "reverted") throw new Error(`publishDossier tx reverted: ${txHash}`);
+
+  // Read-back with retry — Mantle Sepolia RPC can lag after rapid writes
+  let version = 0;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const latest = await publicClient.readContract({
+        address: args.registry, abi: REGISTRY_ABI, functionName: "latest", args: [assetId],
+      });
+      version = Number(latest.version);
+      break;
+    } catch {
+      if (attempt === 2) throw new Error(`latest() read-back failed after 3 attempts (tx confirmed: ${txHash})`);
+      await new Promise((r) => setTimeout(r, 2000));
+    }
+  }
 
   return {
-    txHash, assetId, version: Number(latest.version), dossierHash: dHash, methodologyHash: mHash,
+    txHash, assetId, version, dossierHash: dHash, methodologyHash: mHash,
     verifyUrl: `${mantleSepolia.blockExplorers!.default.url}/tx/${txHash}`,
   };
 }

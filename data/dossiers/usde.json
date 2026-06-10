@@ -1,0 +1,85 @@
+{
+  "assetId": "usde",
+  "symbol": "USDe",
+  "rubricVersion": "1.0.0",
+  "composite": 72.6,
+  "grade": "A",
+  "dimensions": [
+    {
+      "dimension": "collateral",
+      "score": 60,
+      "factors": [
+        "base 60 for backing type synthetic_delta_neutral",
+        "attestation fresh (31d)",
+        "fully collateralized (100.0%)"
+      ],
+      "unknown": false,
+      "effectiveWeight": 31.3
+    },
+    {
+      "dimension": "redemption",
+      "score": 85,
+      "factors": [
+        "base 75: on-chain redemption path exists",
+        "+10 same-day settlement",
+        "redemption volume unsourced — no usage bonus (R4: logged, not defaulted)"
+      ],
+      "unknown": false,
+      "effectiveWeight": 25
+    },
+    {
+      "dimension": "liquidity",
+      "score": 65,
+      "factors": [
+        "base 80: DEX TVL 25.11% of market cap ($28,306,411)",
+        "-15 exit $100k costs 320bps",
+        "volume data unavailable from source — no volume adjustment (R4: logged, not defaulted)"
+      ],
+      "unknown": false,
+      "effectiveWeight": 25
+    },
+    {
+      "dimension": "concentration",
+      "score": null,
+      "factors": [
+        "no sourced inputs — dimension flagged unknown"
+      ],
+      "unknown": true,
+      "effectiveWeight": 0
+    },
+    {
+      "dimension": "transparency",
+      "score": 87,
+      "factors": [
+        "base 75: attestations every 31d",
+        "+5 contracts verified",
+        "+7 docs completeness 85%"
+      ],
+      "unknown": false,
+      "effectiveWeight": 18.8
+    }
+  ],
+  "flags": [
+    "dimension 'concentration' UNKNOWN — no sourced inputs; weight redistributed"
+  ],
+  "probeSnapshot": {
+    "assetId": "usde",
+    "address": "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34",
+    "fetchedAt": "2026-06-10T10:03:50.579Z",
+    "totalSupply": 112808939.560804,
+    "priceUsd": 0.999221546720037,
+    "marketCapUsd": 112721123.07179375,
+    "dexTvlUsd": 28306410.541716095,
+    "dexPoolCount": 20,
+    "largestPoolTvlUsd": 6254939.5857,
+    "depthToExit100kBps": 320,
+    "contractsVerifiedSourcify": true,
+    "top10HolderPct": null,
+    "notes": [
+      "marketCap = Mantle-chain supply x price (chain-local cap, not global)",
+      "dex pools via GeckoTerminal (top 20): aggregate 24h volume $1,060,890 (7d volume not provided -> vol adjustment skipped)",
+      "depthToExit100kBps is a PROXY: constant-product impact estimate against the largest pool's TVL/2, not a routed quote",
+      "holders probe failed (explorer outage tolerated): 502 https://explorer.mantle.xyz/api/v2/tokens/0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34/holders"
+    ]
+  }
+}

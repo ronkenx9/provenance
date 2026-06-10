@@ -1,0 +1,84 @@
+{
+  "assetId": "fbtc",
+  "symbol": "FBTC",
+  "rubricVersion": "1.0.0",
+  "composite": 76.7,
+  "grade": "A",
+  "dimensions": [
+    {
+      "dimension": "collateral",
+      "score": 72,
+      "factors": [
+        "base 72 for backing type btc_custodial",
+        "attestation fresh (0d)",
+        "fully collateralized (100.0%)"
+      ],
+      "unknown": false,
+      "effectiveWeight": 41.7
+    },
+    {
+      "dimension": "redemption",
+      "score": null,
+      "factors": [
+        "no sourced inputs — dimension flagged unknown"
+      ],
+      "unknown": true,
+      "effectiveWeight": 0
+    },
+    {
+      "dimension": "liquidity",
+      "score": 65,
+      "factors": [
+        "base 80: DEX TVL 8.44% of market cap ($1,357,156)",
+        "-15 exit $100k costs 1488bps",
+        "volume data unavailable from source — no volume adjustment (R4: logged, not defaulted)"
+      ],
+      "unknown": false,
+      "effectiveWeight": 33.3
+    },
+    {
+      "dimension": "concentration",
+      "score": null,
+      "factors": [
+        "no sourced inputs — dimension flagged unknown"
+      ],
+      "unknown": true,
+      "effectiveWeight": 0
+    },
+    {
+      "dimension": "transparency",
+      "score": 100,
+      "factors": [
+        "base 90: daily attestations",
+        "+5 contracts verified",
+        "+6 docs completeness 80%"
+      ],
+      "unknown": false,
+      "effectiveWeight": 25
+    }
+  ],
+  "flags": [
+    "dimension 'redemption' UNKNOWN — no sourced inputs; weight redistributed",
+    "dimension 'concentration' UNKNOWN — no sourced inputs; weight redistributed"
+  ],
+  "probeSnapshot": {
+    "assetId": "fbtc",
+    "address": "0xC96dE26018A54D51c097160568752c4E3BD6C364",
+    "fetchedAt": "2026-06-10T10:03:53.083Z",
+    "totalSupply": 263.69083359,
+    "priceUsd": 60977.33816713292,
+    "marketCapUsd": 16079165.131390603,
+    "dexTvlUsd": 1357156.188324838,
+    "dexPoolCount": 15,
+    "largestPoolTvlUsd": 1344377.5233,
+    "depthToExit100kBps": 1488,
+    "contractsVerifiedSourcify": true,
+    "top10HolderPct": null,
+    "notes": [
+      "marketCap = Mantle-chain supply x price (chain-local cap, not global)",
+      "dex pools via GeckoTerminal (top 20): aggregate 24h volume $8,380 (7d volume not provided -> vol adjustment skipped)",
+      "depthToExit100kBps is a PROXY: constant-product impact estimate against the largest pool's TVL/2, not a routed quote",
+      "holders probe failed (explorer outage tolerated): The operation was aborted due to timeout"
+    ]
+  }
+}

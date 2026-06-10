@@ -22,4 +22,8 @@ Mantle, machine-readable so agents can consume ratings.
 - FBTC  `0xC96dE26018A54D51c097160568752c4E3BD6C364` (symbol=FBTC)
 
 ## Deployed addresses
-(record here as they happen — contract, frontend URL, tx hashes)
+- DossierRegistry: `0xd1534d20006248f4c2c290F83e6377b4A06037A9` (Mantle Sepolia 5003)
+  - Deploy tx: `0x83600f9faa9a5216b6920f1aaa6e99a36ba8296a833788c83fd57905f8e074fe`
+  - Deployer/Publisher: `0x093c1F3C6daA784376dF100e361F692DbB33acd8`
+  - Sourcify verified: exact_match
+  - Explorer: https://sepolia.mantlescan.xyz/address/0xd1534d20006248f4c2c290F83e6377b4A06037A9

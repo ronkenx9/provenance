@@ -6,6 +6,8 @@ import chalk from "chalk";
 import { ASSET_IDS, loadAssetDoc, toRubricInputs } from "./corpus/load.js";
 import { probeAsset, toProbeData, type ProbeResult } from "./probes/asset-probe.js";
 import { buildDossier } from "./rubric/score.js";
+import { publishDossierOnChain } from "./anchor/publish.js";
+import type { Dossier } from "./rubric/types.js";
 
 const SNAP_DIR = join(process.cwd(), "data", "snapshots");
 
@@ -62,8 +64,43 @@ if (cmd === "probe") {
     const max = Math.max(...results.map((r) => r.composite)), min = Math.min(...results.map((r) => r.composite));
     console.log(chalk.bold(`\nspread: ${(max - min).toFixed(1)} points · grades: ${[...new Set(results.map((r) => r.grade))].join("/")}`));
   }
+} else if (cmd === "publish") {
+  const registry = process.env.REGISTRY_ADDRESS as `0x${string}`;
+  const privateKey = process.env.DEPLOYER_PRIVATE_KEY as `0x${string}`;
+  if (!registry || !privateKey) { console.error("REGISTRY_ADDRESS and DEPLOYER_PRIVATE_KEY must be set in .env"); process.exit(1); }
+
+  const ids = assetArg && assetArg !== "all" ? [assetArg.toLowerCase()] : [...ASSET_IDS];
+  const live = Boolean(args["live"]);
+
+  for (const id of ids) {
+    const probe = await getProbe(id, true); // always from snapshot for reproducibility
+    const doc = loadAssetDoc(id);
+    const { inputs } = toRubricInputs(doc, toProbeData(probe));
+    const dossier: Dossier = buildDossier(inputs);
+    const dossierJson = JSON.stringify({ assetId: id, symbol: doc.symbol, ...dossier, probeSnapshot: probe }, null, 2);
+
+    // Write canonical dossier JSON to data/dossiers/
+    const dossierDir = join(process.cwd(), "data", "dossiers");
+    mkdirSync(dossierDir, { recursive: true });
+    writeFileSync(join(dossierDir, `${id}.json`), dossierJson);
+
+    console.log(chalk.bold(`\n${doc.symbol} — ${dossier.composite} ${dossier.grade}`));
+
+    if (live) {
+      console.log(chalk.dim("  publishing on-chain..."));
+      const result = await publishDossierOnChain({
+        symbol: doc.symbol, dossier, dossierJson, registry, privateKey,
+      });
+      console.log(chalk.green(`  ✓ tx ${result.txHash}`));
+      console.log(chalk.green(`    version ${result.version} · ${result.verifyUrl}`));
+    } else {
+      console.log(chalk.dim("  dry run (pass --live to broadcast)"));
+      console.log(chalk.dim(`  dossier written to data/dossiers/${id}.json`));
+    }
+  }
 } else {
   console.log(`usage:
   npm run dev -- probe [asset]            live probe (writes data/snapshots/<asset>.json)
-  npm run dev -- score [asset|all] [--from-snapshot]`);
+  npm run dev -- score [asset|all] [--from-snapshot]
+  npm run dev -- publish [asset|all] [--live]   publish dossiers on-chain`);
 }
