@@ -1,0 +1,9 @@
+FBTC receives a composite score of 76.7 and a grade of A, the highest composite in this assessment. The rating is anchored by strong transparency practices and solid custodial collateral, though two unknown dimensions compress the scoring base.
+
+Collateral quality scores 72 at an effective weight of 41.7% — the heaviest single dimension influence across all four assets, because two other dimensions are unknown and their weight is redistributed here. FBTC is backed by custodied Bitcoin, fully collateralized at par. Attestation freshness is 0 days, reflecting real-time or daily proof-of-reserve reporting. The custodial model carries counterparty risk tied to the custodian's operational security and insurance coverage, distinct from the smart contract risk of LSTs or the basis risk of synthetic dollars.
+
+Liquidity scores 65 at 33.3% weight. DEX TVL on Mantle is $1,357,156, representing 8.44% of market cap — a moderate ratio. Exiting a $100,000 position incurs an estimated 1488 basis points of slippage, derived from constant-product impact modeling. Volume data was unavailable and not defaulted.
+
+Transparency scores 100 at 25% weight — the only perfect dimension score in this assessment. Daily attestations, verified contracts, and 80% documentation completeness combine for a maximum rating. This reflects FBTC's commitment to public proof-of-reserve infrastructure.
+
+Redemption mechanics and concentration risk are both flagged unknown. No sourced data on the primary redemption path, notice period, or holder concentration was available for FBTC on Mantle. Their combined weight was redistributed to the three scored dimensions. The absence of redemption data is the most material gap: without a verified exit path, holders depend entirely on secondary DEX liquidity, which at current depth cannot absorb large positions without severe slippage.

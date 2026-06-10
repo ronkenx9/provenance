@@ -1,0 +1,9 @@
+USDY receives a composite score of 60.2 and a grade of B, driven primarily by strong collateral fundamentals offset by critically thin on-chain liquidity on Mantle.
+
+Collateral quality scores 90 out of 100 at an effective weight of 38.5%. USDY is backed by short-duration US Treasuries and bank demand deposits, with daily transparency reports published by the verification agent Ankura Trust. The attestation age of 1 day reflects reporting cadence rather than a specific verified date — a conservative proxy. The collateral ratio stands at fully backed, though Ondo cites an additional first-loss equity cushion whose size could not be independently sourced this pass, so no over-collateralization credit is taken.
+
+Redemption mechanics score 73 at 30.8% weight. An on-chain redemption path exists with T+1 USD wire settlement, earning a 1-day notice period deduction. Redemption volume data was unavailable and therefore not defaulted — the engine grants no usage bonus without sourced evidence, per its unknown-handling rule.
+
+Liquidity is the critical weakness, scoring 10 at 30.8% weight. DEX total value locked on Mantle amounts to roughly $5,254, representing 0.02% of market cap. Exiting a $100,000 position would incur an estimated 1545902 basis points of slippage — a proxy derived from constant-product impact against the largest pool, not a routed quote. This is effectively illiquid for any meaningful position size.
+
+Concentration risk and transparency dimensions are flagged unknown due to unavailable on-chain holder data and unresolved contract verification status. Their weights were redistributed to the scored dimensions, which compresses the composite toward collateral and redemption strength while masking potential risks in governance concentration and disclosure quality. A future update sourcing Mantle explorer holder data and Sourcify verification would materially affect this rating.

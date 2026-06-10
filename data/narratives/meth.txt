@@ -1,0 +1,9 @@
+mETH receives a composite score of 66.1 and a grade of B, reflecting solid collateral backing and functional redemption mechanics tempered by moderate liquidity friction on Mantle DEXes.
+
+Collateral quality scores 78 at an effective weight of 38.5%. As an ETH liquid staking token operated by Mantle itself, mETH carries the base profile of an LST — exposure to Ethereum staking risk plus protocol-layer smart contract risk. Attestation freshness is reported at 0 days, and the collateral ratio is fully backed at par. The LST structure means collateral value fluctuates with ETH price, unlike treasury-backed stablecoins with a fixed par target.
+
+Redemption scores 67 at 30.8% weight. An on-chain unstaking path exists, but the 4-day notice period imposes a meaningful delay penalty. Redemption volume data was not sourced, so the engine applies no usage bonus — the path exists but its real-world throughput is unverified.
+
+Liquidity scores 50 at 30.8% weight. DEX TVL on Mantle sits at $2,222,876, covering 4.37% of market cap — a reasonable ratio but still thin in absolute terms. Exiting a $100,000 position costs an estimated 1864 basis points, derived from constant-product impact modeling rather than a routed quote.
+
+Concentration risk and transparency dimensions are flagged unknown. No on-chain holder concentration data or contract verification status could be sourced for this assessment. Their combined weight was redistributed to the three scored dimensions. Given that Mantle Network itself operates the mETH protocol, a future concentration assessment should examine issuer-holder overlap carefully — the protocol operator being the chain operator introduces correlation risk that this rating cannot yet quantify.

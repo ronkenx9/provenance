@@ -1,0 +1,11 @@
+USDe receives a composite score of 72.6 and a grade of A, the highest-graded stablecoin in this assessment — though that grade reflects strong liquidity and redemption mechanics rather than collateral safety.
+
+Collateral quality scores 60 at an effective weight of 31.3%. USDe is a synthetic delta-neutral dollar: it holds staked ETH and shorts equivalent perpetual futures to maintain its peg. This mechanism is fundamentally different from treasury-backed tokens like USDY. The strategy carries basis risk, funding rate inversion risk, and counterparty exposure to centralized exchanges holding the short leg. Attestation age stands at 31 days, reflecting monthly custodian report cadence — a proxy, not a specific report date.
+
+Redemption scores 85 at 25% weight, the strongest dimension. An on-chain redemption path exists with same-day settlement, earning a bonus for speed. However, direct minting and redemption is restricted to KYC-whitelisted approved parties; retail holders exit through secondary DEX liquidity rather than the primary path. Redemption volume data was not sourced, so no usage bonus is applied.
+
+Liquidity scores 65 at 25% weight. DEX TVL on Mantle reaches $28,306,411 — 25.11% of market cap — the deepest pool coverage of any asset in this assessment. Exiting a $100,000 position costs an estimated 320 basis points, materially better than peers.
+
+Transparency scores 87 at 18.8% weight. Contracts are verified on-chain, and documentation completeness reaches 85%. Monthly attestations provide regular but not continuous oversight.
+
+Concentration risk is flagged unknown due to unavailable holder data; its weight was redistributed. The core risk an agent should weigh: USDe's collateral mechanism is structurally complex and its failure mode — a sustained negative funding rate — is correlated with the broader crypto market stress that would make exit liquidity most needed.
