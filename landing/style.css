@@ -156,6 +156,40 @@ nav .inner{
   width:clamp(11rem,22vw,19rem);height:auto;
   will-change:transform;pointer-events:none;
 }
+/* —— the eclipse: corona behind the seal —— */
+.hero-seal::before{
+  content:'';position:absolute;inset:-42%;z-index:-2;border-radius:50%;
+  background:
+    radial-gradient(circle,
+      rgba(227,165,47,0)      30%,
+      rgba(227,165,47,.42)    36.5%,
+      rgba(240,196,92,.18)    41%,
+      rgba(192,57,43,.07)     50%,
+      rgba(227,165,47,.02)    60%,
+      transparent             70%);
+  animation:corona-breathe 7s ease-in-out infinite;
+  filter:blur(2px);
+}
+/* slow light-sweep across the corona */
+.hero-seal::after{
+  content:'';position:absolute;inset:-42%;z-index:-1;border-radius:50%;
+  background:conic-gradient(
+    from 0deg,
+    transparent 0deg, rgba(240,196,92,.16) 14deg, transparent 40deg,
+    transparent 150deg, rgba(227,165,47,.10) 170deg, transparent 205deg,
+    transparent 360deg);
+  -webkit-mask:radial-gradient(circle, transparent 31%, #000 37%, #000 52%, transparent 66%);
+  mask:radial-gradient(circle, transparent 31%, #000 37%, #000 52%, transparent 66%);
+  animation:corona-sweep 26s linear infinite;
+}
+@keyframes corona-breathe{
+  0%,100%{transform:scale(1);opacity:.9}
+  50%{transform:scale(1.045);opacity:1}
+}
+@keyframes corona-sweep{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){
+  .hero-seal::before,.hero-seal::after{animation:none}
+}
 .hero>p,.hero>h1,.hero>div:not(.hero-seal){position:relative;z-index:1}
 .seal-spin{animation:sealspin 60s linear infinite}
 @keyframes sealspin{to{transform:rotate(360deg)}}
