@@ -123,6 +123,12 @@ frontend/           Single-page dossier viewer
 test/               Vitest tests (rubric, corpus, narrative)
 ```
 
+## Documentation & Agent Skill
+
+- **Docs page:** `landing/docs.html` — REST, MCP, on-chain reference, methodology.
+- **Agent skill:** `skills/provenance-ratings/SKILL.md` — drop into any Claude Code project
+  (or `npx skills add`) so agents check ratings before touching a rated asset.
+
 ## MCP Tools
 
 | Tool | Description |

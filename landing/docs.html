@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PROVENANCE — Documentation</title>
+<meta name="description" content="Integrate PROVENANCE risk ratings: REST API, MCP server, and on-chain registry reference.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=8">
+<style>
+  body{background:var(--bone);color:var(--ink-on-paper)}
+  .docs-shell{max-width:76rem;margin:0 auto;padding:7.5rem clamp(1.25rem,4vw,3rem) 6rem;display:grid;grid-template-columns:13rem 1fr;gap:clamp(2rem,5vw,5rem)}
+  .docs-nav{position:sticky;top:6.5rem;align-self:start;display:flex;flex-direction:column;gap:.65rem}
+  .docs-nav a{font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mute-paper);text-decoration:none;transition:color .25s}
+  .docs-nav a:hover{color:var(--ink-on-paper)}
+  .docs-nav .dn-h{font-family:var(--serif);font-size:1rem;color:var(--ink-on-paper);margin-bottom:.4rem}
+  .docs h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.4rem,5vw,3.6rem);line-height:1.05;margin-bottom:1rem}
+  .docs h2{font-family:var(--serif);font-weight:400;font-size:1.7rem;margin:3.4rem 0 .9rem;padding-top:1rem;border-top:1px solid var(--line-paper)}
+  .docs h3{font-family:var(--mono);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mute-paper);margin:1.9rem 0 .6rem}
+  .docs p{font-size:.92rem;color:#3A3830;max-width:44rem;margin-bottom:.9rem}
+  .docs pre{background:var(--ink);color:var(--bone);border-radius:8px;padding:1.1rem 1.3rem;font-family:var(--mono);font-size:.76rem;line-height:1.75;overflow-x:auto;margin:.9rem 0 1.3rem;max-width:44rem}
+  .docs code{font-family:var(--mono);font-size:.85em}
+  .docs p code,.docs li code,.docs td code{background:#E0DACB;padding:.1em .4em;border-radius:4px}
+  .docs pre .c{color:#6F7178}.docs pre .a{color:var(--amber)}.docs pre .g{color:#7CC79B}
+  .docs table{border-collapse:collapse;margin:.9rem 0 1.3rem;max-width:44rem;width:100%}
+  .docs th{font-family:var(--mono);font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mute-paper);text-align:left;padding:.5rem .8rem;border-bottom:1px solid var(--ink-on-paper)}
+  .docs td{font-size:.82rem;color:#3A3830;padding:.55rem .8rem;border-bottom:1px solid var(--line-paper);vertical-align:top}
+  .docs .pill{display:inline-block;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;border:1px solid var(--ink-on-paper);border-radius:99px;padding:.18rem .65rem;margin-right:.4rem}
+  .callout{border-left:3px solid var(--amber);background:#E7E1D2;padding:.9rem 1.1rem;font-size:.85rem;color:#3A3830;max-width:44rem;margin:.9rem 0 1.3rem}
+  nav.docs-top{mix-blend-mode:normal;background:var(--bone);border-bottom:1px solid var(--line-paper)}
+  nav.docs-top .wordmark,nav.docs-top .nav-links a{color:var(--ink-on-paper)}
+  nav.docs-top .nav-links a::after{background:var(--ink-on-paper)}
+  @media(max-width:860px){.docs-shell{grid-template-columns:1fr}.docs-nav{position:static;flex-direction:row;flex-wrap:wrap;gap:1rem}.docs-nav .dn-h{display:none}}
+</style>
+</head>
+<body>
+<nav class="docs-top"><div class="inner">
+  <a class="wordmark" href="index.html">Provenance</a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="../frontend/index.html">Viewer</a>
+    <a href="https://explorer.sepolia.mantle.xyz/address/0xd1534d20006248f4c2c290F83e6377b4A06037A9" target="_blank" rel="noopener">Explorer</a>
+  </div>
+</div></nav>
+
+<div class="docs-shell">
+  <aside class="docs-nav">
+    <span class="dn-h">Docs</span>
+    <a href="#quickstart">Quickstart</a>
+    <a href="#rest">REST API</a>
+    <a href="#mcp">MCP Server</a>
+    <a href="#onchain">On-chain Registry</a>
+    <a href="#methodology">Methodology</a>
+    <a href="#narratives">Narratives</a>
+    <a href="#limits">Limitations</a>
+  </aside>
+
+  <main class="docs">
+    <h1>Documentation<span class="dot-amber">.</span></h1>
+    <p>PROVENANCE publishes deterministic, on-chain-anchored risk dossiers for tokenized assets. Three ways to consume a rating: REST for apps, MCP for agents, and the registry contract for anything that can read Mantle.</p>
+    <p><span class="pill">Registry 0xd153…37A9</span><span class="pill">Mantle Sepolia 5003</span><span class="pill">Rubric v1.0.0</span></p>
+
+    <h2 id="quickstart">Quickstart</h2>
+<pre>git clone &lt;repo&gt; provenance &amp;&amp; cd provenance
+npm install
+npm test                              <span class="c"># 22 tests</span>
+npm run dev -- score all --from-snapshot   <span class="c"># offline, deterministic</span>
+npm run api                           <span class="c"># REST + viewer on :3000</span></pre>
+
+    <h2 id="rest">REST API</h2>
+    <table>
+      <tr><th>Endpoint</th><th>Returns</th></tr>
+      <tr><td><code>GET /ratings</code></td><td>all assets — composite, grade, per-dimension summary</td></tr>
+      <tr><td><code>GET /rating/:asset</code></td><td>full dossier: dimensions, factors, flags, narrative, registry link</td></tr>
+      <tr><td><code>GET /narrative/:asset</code></td><td>validated plain-English narrative only</td></tr>
+      <tr><td><code>GET /health</code></td><td>service status</td></tr>
+    </table>
+<pre><span class="a">$</span> curl localhost:3000/rating/USDY
+{
+  "symbol": "USDY",
+  "composite": <span class="a">60.2</span>,
+  "grade": "B",
+  "dimensions": [
+    { "dimension": "collateral", "score": 90, "effectiveWeight": 38.5,
+      "factors": ["base 90 for backing type tbills", <span class="c">…</span>] },
+    { "dimension": "concentration", "score": null, "unknown": <span class="a">true</span>,
+      "factors": ["no sourced inputs — dimension flagged unknown"] }
+  ],
+  "flags": ["dimension 'concentration' UNKNOWN — weight redistributed"],
+  "narrative": "USDY receives a composite score of 60.2…"
+}</pre>
+    <div class="callout">Asset ids: <code>USDY</code> · <code>mETH</code> · <code>USDe</code> · <code>FBTC</code> (case-insensitive).</div>
+
+    <h2 id="mcp">MCP Server</h2>
+    <p>Stdio server for Claude Code or any MCP client:</p>
+<pre><span class="a">$</span> claude mcp add provenance -- npm --prefix /path/to/provenance run mcp</pre>
+    <table>
+      <tr><th>Tool</th><th>Args</th><th>Returns</th></tr>
+      <tr><td><code>PROVENANCE_LIST</code></td><td>—</td><td>all assets: symbol, composite, grade, flag count</td></tr>
+      <tr><td><code>PROVENANCE_GET_RATING</code></td><td><code>{ asset }</code></td><td>full dossier JSON</td></tr>
+      <tr><td><code>PROVENANCE_EXPLAIN</code></td><td><code>{ asset }</code></td><td>validated narrative — why the score is what it is</td></tr>
+    </table>
+
+    <h2 id="onchain">On-chain Registry</h2>
+    <p><code>DossierRegistry</code> at <code>0xd1534d20006248f4c2c290F83e6377b4A06037A9</code> (Mantle Sepolia 5003, Sourcify exact_match). No PROVENANCE infrastructure required — read it directly:</p>
+<pre><span class="c"># latest rating for USDY</span>
+<span class="a">$</span> cast call 0xd1534d20006248f4c2c290F83e6377b4A06037A9 \
+    "latest(bytes32)" $(cast keccak "USDY") \
+    --rpc-url https://rpc.sepolia.mantle.xyz</pre>
+    <table>
+      <tr><th>Function</th><th>Notes</th></tr>
+      <tr><td><code>latest(bytes32 assetId)</code></td><td>one-call agent read → <code>(score×10, grade, dossierHash, methodologyHash, atBlock, version)</code></td></tr>
+      <tr><td><code>history(bytes32 assetId)</code></td><td>every published version</td></tr>
+      <tr><td><code>versionCount(bytes32)</code></td><td>number of versions</td></tr>
+      <tr><td><code>assetIdOf(string)</code></td><td>helper — <code>keccak256(bytes(symbol))</code></td></tr>
+      <tr><td><code>publishDossier(…)</code></td><td>publisher-gated; emits <code>DossierPublished</code></td></tr>
+    </table>
+    <div class="callout"><strong>Integrity model:</strong> <code>dossierHash</code> = sha256 of the canonical dossier JSON. <code>methodologyHash</code> = sha256 of weights + scorer source — a rubric change is a new methodology, visible on-chain. Never a silent edit.</div>
+
+    <h2 id="methodology">Methodology</h2>
+    <p>Composite 0–100 from five dimensions. The LLM never produces a score.</p>
+    <table>
+      <tr><th>Dimension</th><th>Weight</th><th>Inputs</th></tr>
+      <tr><td>Collateral quality</td><td>25</td><td>backing type · attestation freshness · collateral ratio</td></tr>
+      <tr><td>Redemption mechanics</td><td>20</td><td>on-chain path · notice period · realized volume</td></tr>
+      <tr><td>Liquidity depth</td><td>20</td><td>DEX TVL vs cap · cost to exit $100k</td></tr>
+      <tr><td>Concentration risk</td><td>20</td><td>top-10 holders · single points of failure · bridges</td></tr>
+      <tr><td>Transparency</td><td>15</td><td>attestation cadence · verified contracts · docs completeness</td></tr>
+    </table>
+    <p>Grade bands: <strong>AA</strong> 85+ · <strong>A</strong> 70–84 · <strong>B</strong> 50–69 · <strong>C</strong> 30–49 · <strong>D</strong> &lt;30.</p>
+    <h3>The unknown rule</h3>
+    <p>A dimension without independently sourced inputs scores <em>nothing</em>: it is flagged <code>unknown</code>, its weight is redistributed across scored dimensions, and the flag is printed on the dossier and anchored on-chain. Withholding data lowers certainty visibly — silence is penalized, never neutral. Unverifiable claims earn the conservative floor and an annotation (<code>PROXY</code> / <code>SECONDARY SOURCE</code> / <code>CONSERVATIVE FLOOR</code>).</p>
+
+    <h2 id="narratives">Narratives</h2>
+    <p>The plain-English layer is LLM-written and machine-validated: every numeral in the prose must match a value in the computed record or the narrative is rejected and regenerated (max 3 attempts, then hard failure). Hype vocabulary is banned. A deliberately corrupted narrative fails the test suite.</p>
+
+    <h2 id="limits">Limitations</h2>
+    <table>
+      <tr><th>Limit</th><th>Detail</th></tr>
+      <tr><td>Coverage</td><td>v1 rates exactly four assets: USDY, mETH, USDe, FBTC</td></tr>
+      <tr><td>Anchor chain</td><td>registry on Mantle Sepolia (testnet); asset measurement on Mantle mainnet</td></tr>
+      <tr><td>Attester trust</td><td>published attestations trusted at document level; signed attestations / PoR oracles are roadmap</td></tr>
+      <tr><td>Ratings ≠ advice</td><td>dossiers describe risk structure; they are not investment recommendations</td></tr>
+    </table>
+  </main>
+</div>
+</body>
+</html>
