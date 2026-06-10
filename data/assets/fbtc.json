@@ -1,0 +1,50 @@
+{
+  "assetId": "fbtc",
+  "symbol": "FBTC",
+  "address": "0xC96dE26018A54D51c097160568752c4E3BD6C364",
+  "chainId": 5000,
+  "researchedAt": "2026-06-10",
+  "collateral": {
+    "backingType": {
+      "value": "btc_custodial",
+      "source": "https://docs.fbtc.com/proof-of-reserve/proof-of-reserve",
+      "note": "BTC held in MPC custodial addresses; key shares split across council institutions."
+    },
+    "attestationAgeDays": {
+      "value": 0,
+      "source": "https://data.chain.link/feeds/ethereum/mainnet/fbtc-por",
+      "note": "Chainlink Proof of Reserve feed continuously monitors BTC reserves on-chain."
+    },
+    "collateralRatio": {
+      "value": 1.0,
+      "source": "https://data.chain.link/feeds/ethereum/mainnet/fbtc-por",
+      "note": "1:1 BTC peg monitored via PoR."
+    }
+  },
+  "redemption": {
+    "onchainRedemption": {
+      "value": true,
+      "source": "https://docs.fbtc.com/system-components/custodial-addresses",
+      "note": "Mint/redeem via custodial addresses with mandatory KYC/AML; settlement timing not documented, so noticeDays is intentionally omitted and the dimension stays partial."
+    }
+  },
+  "concentration": {
+    "singlePointsOfFailure": {
+      "value": 2,
+      "source": "https://docs.fbtc.com/security/roles",
+      "note": "MPC custodian arrangement and the Security Council (initial members: Mantle, Antalpha Prime, Cobo)."
+    }
+  },
+  "transparency": {
+    "attestationCadenceDays": {
+      "value": 1,
+      "source": "https://data.chain.link/feeds/ethereum/mainnet/fbtc-por",
+      "note": "Continuous Chainlink PoR; scored as daily-equivalent."
+    },
+    "docsCompleteness": {
+      "value": 0.8,
+      "source": "https://docs.fbtc.com",
+      "note": "Checklist: docs site, whitepaper, PoR page, roles/security docs present; redemption settlement terms not documented."
+    }
+  }
+}

@@ -43,7 +43,8 @@ export function scoreRedemption(i: RedemptionInputs): { score: number; factors: 
   if (i.noticeDays <= 0) { s += 10; factors.push("+10 same-day settlement"); }
   else { const pen = Math.min(20, i.noticeDays * 2); s -= pen; factors.push(`-${pen} notice period ${i.noticeDays}d`); }
   // Proven usage: >=2% of supply redeemed in 90d +15; >=0.5% +8; else 0 ("untested path").
-  if (i.redemptionVolume90dPctSupply >= 2) { s += 15; factors.push(`+15 redemption path well-used (${i.redemptionVolume90dPctSupply}% of supply / 90d)`); }
+  if (i.redemptionVolume90dPctSupply === undefined) factors.push("redemption volume unsourced — no usage bonus (R4: logged, not defaulted)");
+  else if (i.redemptionVolume90dPctSupply >= 2) { s += 15; factors.push(`+15 redemption path well-used (${i.redemptionVolume90dPctSupply}% of supply / 90d)`); }
   else if (i.redemptionVolume90dPctSupply >= 0.5) { s += 8; factors.push(`+8 redemption path used (${i.redemptionVolume90dPctSupply}%)`); }
   else factors.push(`redemption path untested at scale (${i.redemptionVolume90dPctSupply}% / 90d)`);
   return { score: clamp(s), factors };

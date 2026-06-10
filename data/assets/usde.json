@@ -1,0 +1,55 @@
+{
+  "assetId": "usde",
+  "symbol": "USDe",
+  "address": "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34",
+  "chainId": 5000,
+  "researchedAt": "2026-06-10",
+  "collateral": {
+    "backingType": {
+      "value": "synthetic_delta_neutral",
+      "source": "https://docs.ethena.fi/solution-overview/usde-overview",
+      "note": "Stablecoins + staked ETH hedged with short perp/futures positions of equal size."
+    },
+    "attestationAgeDays": {
+      "value": 31,
+      "source": "https://docs.ethena.fi/resources/custodian-attestations",
+      "note": "PROXY: monthly custodian attestations; age taken as cadence, not a specific report date."
+    },
+    "collateralRatio": {
+      "value": 1.0,
+      "source": "https://docs.ethena.fi/solution-overview/usde-overview",
+      "note": "Fully-backed claim per protocol docs; reserve-fund cushion size not sourced this pass."
+    }
+  },
+  "redemption": {
+    "onchainRedemption": {
+      "value": true,
+      "source": "https://docs.ethena.fi/solution-overview/usde-overview",
+      "note": "Mint/redeem restricted to KYC-whitelisted approved parties; retail exits via secondary liquidity. Settlement time not specified in docs."
+    },
+    "noticeDays": {
+      "value": 0,
+      "source": "https://docs.ethena.fi/solution-overview/usde-overview",
+      "note": "Atomic mint/redeem for whitelisted parties; the whitelisting restriction is the real friction and is surfaced in the narrative."
+    }
+  },
+  "concentration": {
+    "singlePointsOfFailure": {
+      "value": 3,
+      "source": "https://docs.ethena.fi/resources/custodian-attestations",
+      "note": "Off-exchange custody providers holding backing assets plus exchange counterparties for the hedge legs."
+    }
+  },
+  "transparency": {
+    "attestationCadenceDays": {
+      "value": 31,
+      "source": "https://docs.ethena.fi/resources/custodian-attestations",
+      "note": "Monthly custodian attestations validating existence, control, and value of backing assets; PoR dashboards supplement."
+    },
+    "docsCompleteness": {
+      "value": 0.85,
+      "source": "https://docs.ethena.fi",
+      "note": "Checklist: docs site, mechanism docs, risks section, attestations page present; redemption settlement terms not documented."
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "assetId": "usdy",
+  "symbol": "USDY",
+  "address": "0x5bE26527e817998A7206475496fDE1E68957c5A6",
+  "chainId": 5000,
+  "researchedAt": "2026-06-10",
+  "collateral": {
+    "backingType": {
+      "value": "tbills",
+      "source": "https://app.rwa.xyz/assets/USDY",
+      "note": "Short-term US Treasuries and bank demand deposits per Ondo / rwa.xyz asset page."
+    },
+    "attestationAgeDays": {
+      "value": 1,
+      "source": "https://app.rwa.xyz/assets/USDY",
+      "note": "PROXY: Ankura Trust (Verification Agent) publishes daily transparency reports; age taken as cadence, not a specific report date."
+    },
+    "collateralRatio": {
+      "value": 1.0,
+      "source": "https://app.rwa.xyz/assets/USDY",
+      "note": "CONSERVATIVE FLOOR: fully-backed claim per verification reports. Ondo additionally cites a first-loss equity cushion; cushion size not independently sourced this pass, so no over-collateralization credit is taken."
+    }
+  },
+  "redemption": {
+    "onchainRedemption": {
+      "value": true,
+      "source": "https://eco.com/support/en/articles/14798657-ondo-usdy-tokenized-treasuries-explained",
+      "note": "SECONDARY SOURCE: holders submit USDY, USD wired T+1. New mints face a 40-50 day transfer restriction (mint-side, not redemption-side)."
+    },
+    "noticeDays": {
+      "value": 1,
+      "source": "https://eco.com/support/en/articles/14798657-ondo-usdy-tokenized-treasuries-explained",
+      "note": "SECONDARY SOURCE: T+1 USD wire after redemption submission."
+    }
+  },
+  "concentration": {
+    "singlePointsOfFailure": {
+      "value": 2,
+      "source": "https://app.rwa.xyz/assets/USDY",
+      "note": "Ankura Trust as single Verification+Collateral Agent; banking partners holding demand deposits."
+    }
+  },
+  "transparency": {
+    "attestationCadenceDays": {
+      "value": 1,
+      "source": "https://app.rwa.xyz/assets/USDY",
+      "note": "Daily transparency reports plus monthly independent review, both via Ankura Trust."
+    },
+    "docsCompleteness": {
+      "value": 0.9,
+      "source": "https://docs.ondo.finance",
+      "note": "Checklist: docs site, offering terms, verification-agent reports, risk disclosures present; methodology applied uniformly across assets."
+    }
+  }
+}

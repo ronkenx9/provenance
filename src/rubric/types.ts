@@ -23,8 +23,8 @@ export interface RedemptionInputs {
   onchainRedemption: boolean;
   /** Notice/settlement period in days for primary redemption. */
   noticeDays: number;
-  /** 90-day primary redemption volume as % of supply (proves the path is real). */
-  redemptionVolume90dPctSupply: number;
+  /** 90-day primary redemption volume as % of supply (proves the path is real). OPTIONAL: when unsourced, scorer logs it and grants no usage bonus. */
+  redemptionVolume90dPctSupply?: number;
 }
 
 export interface LiquidityInputs {

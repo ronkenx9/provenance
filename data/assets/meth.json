@@ -1,0 +1,60 @@
+{
+  "assetId": "meth",
+  "symbol": "mETH",
+  "address": "0xcDA86A272531e8640cD7F1a92c01839911B90bb0",
+  "chainId": 5000,
+  "researchedAt": "2026-06-10",
+  "collateral": {
+    "backingType": {
+      "value": "eth_lst",
+      "source": "https://docs.mantle.xyz/meth",
+      "note": "Liquid staking protocol: mETH represents staked ETH plus accrued rewards."
+    },
+    "attestationAgeDays": {
+      "value": 0,
+      "source": "https://docs.mantle.xyz/meth/components/off-chain-systems/staking-meth",
+      "note": "Backing is verifiable on-chain by construction; exchange-rate oracle updates every ~8 hours."
+    },
+    "collateralRatio": {
+      "value": 1.0,
+      "source": "https://docs.mantle.xyz/meth",
+      "note": "1:1 staked-ETH backing with rewards reflected in the exchange rate."
+    }
+  },
+  "redemption": {
+    "onchainRedemption": {
+      "value": true,
+      "source": "https://docs.mantle.xyz/meth/concepts/other/meth-unstake-lifecycle",
+      "note": "Permissionless on-chain unstake requests."
+    },
+    "noticeDays": {
+      "value": 4,
+      "source": "https://docs.mantle.xyz/meth/concepts/other/meth-unstake-lifecycle",
+      "note": "Average ~3.75 days, documented maximum ~7.5 days (post liquidity-buffer); minimum claim delay ~12h."
+    }
+  },
+  "concentration": {
+    "singlePointsOfFailure": {
+      "value": 1,
+      "source": "https://docs.mantle.xyz/meth/concepts/risk-management/slashing-event-handling",
+      "note": "Protocol oracle/operator set as the principal off-chain dependency."
+    },
+    "bridgeDependency": {
+      "value": true,
+      "source": "https://docs.mantle.xyz/meth",
+      "note": "Staking occurs on Ethereum L1; the Mantle-network representation depends on the canonical bridge."
+    }
+  },
+  "transparency": {
+    "attestationCadenceDays": {
+      "value": 1,
+      "source": "https://docs.mantle.xyz/meth/components/off-chain-systems/staking-meth",
+      "note": "State continuously on-chain; oracle refresh ~8h. Scored as daily-equivalent."
+    },
+    "docsCompleteness": {
+      "value": 0.85,
+      "source": "https://docs.mantle.xyz/meth",
+      "note": "Checklist: full protocol docs, risk-management section (slashing, griefing), unstake lifecycle documented."
+    }
+  }
+}
