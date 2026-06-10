@@ -26,13 +26,13 @@
       GATE: zod schema validation passes; spot-check 3 sources resolve (HTTP 200).
 
 ## Phase 2 — Probes + first real scores (1 day)
-- [ ] On-chain probes: totalSupply, DEX pool TVL/depth (reuse meridian moe/agni/defillama probes),
+- [x] On-chain probes: totalSupply, DEX pool TVL/depth (reuse meridian moe/agni/defillama probes),
       top-holder concentration (explorer API), redemption events where applicable.
       GATE: `npm run dev -- probe USDY` prints live mainnet numbers.
-- [ ] Snapshot layer: every probe result written to `data/snapshots/<asset>-<date>.json`; engine
+- [x] Snapshot layer: every probe result written to `data/snapshots/<asset>-<date>.json`; engine
       can run fully from snapshot (demo resilience).
       GATE: `npm run dev -- score USDY --from-snapshot` works offline (wifi off test).
-- [ ] Score all four assets end-to-end.
+- [x] Score all four assets end-to-end.
       GATE: four composites with ≥15-point spread and different grades. If all cluster, the rubric
       isn't discriminating — fix weights, do NOT fudge inputs.
 
