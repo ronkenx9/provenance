@@ -21,7 +21,7 @@
 - [x] Edge tests: missing input → dimension flagged `unknown`, weight redistributed, flag surfaces
       in output. Never silently default.
       GATE: `npm test` green, rubric files at 100% line coverage.
-- [ ] `data/assets/{usdy,meth,usde,fbtc}.json` — structured docs corpus. EVERY field carries a
+- [x] `data/assets/{usdy,meth,usde,fbtc}.json` — structured docs corpus. EVERY field carries a
       `source` URL. Fields without a source → omit (rubric flags unknown).
       GATE: zod schema validation passes; spot-check 3 sources resolve (HTTP 200).
 
