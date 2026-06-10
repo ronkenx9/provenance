@@ -1,0 +1,29 @@
+{
+  "name": "provenance",
+  "version": "0.1.0",
+  "description": "AI ratings agency for tokenized assets — deterministic risk dossiers anchored on Mantle",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/cli.ts",
+    "mcp": "tsx src/mcp-server.ts",
+    "test": "vitest run",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "viem": "^2.21.0",
+    "zod": "^3.23.0",
+    "chalk": "^5.3.0",
+    "minimist": "^1.2.8",
+    "dotenv": "^16.4.5",
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "tsx": "^4.19.0",
+    "vitest": "^2.1.0",
+    "@types/node": "^22.0.0",
+    "@types/minimist": "^1.2.5"
+  }
+}
