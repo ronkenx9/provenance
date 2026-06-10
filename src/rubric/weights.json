@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "dimensions": {
+    "collateral": 25,
+    "redemption": 20,
+    "liquidity": 20,
+    "concentration": 20,
+    "transparency": 15
+  },
+  "gradeBands": [
+    { "grade": "AA", "min": 85 },
+    { "grade": "A", "min": 70 },
+    { "grade": "B", "min": 50 },
+    { "grade": "C", "min": 30 },
+    { "grade": "D", "min": 0 }
+  ]
+}
