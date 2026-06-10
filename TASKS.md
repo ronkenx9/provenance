@@ -5,11 +5,11 @@
 > passes. Commit after every checked task: `git commit -m "P<phase>.<n>: <task>"`.
 
 ## Phase 0 — Scaffold (½ day)
-- [ ] Copy scaffolding from meridian: package.json deps (viem, zod, chalk, minimist, @modelcontextprotocol/sdk, vitest, tsx), tsconfig, src/chains.ts (already 5003-fixed).
+- [x] Copy scaffolding from meridian: package.json deps (viem, zod, chalk, minimist, @modelcontextprotocol/sdk, vitest, tsx), tsconfig, src/chains.ts (already 5003-fixed).
       GATE: `npm run build` passes on empty src.
-- [ ] Port `src/signals/` from meridian → `src/probes/` (rename, strip yield-routing specifics).
+- [x] Port `src/signals/` from meridian → `src/probes/` (rename, strip yield-routing specifics).
       GATE: `npx tsx -e "import('./src/probes/index.js')"` no errors.
-- [ ] Resolve + verify all asset addresses (USDe, FBTC on Mantle mainnet from official docs).
+- [x] Resolve + verify all asset addresses (USDe, FBTC on Mantle mainnet from official docs).
       GATE: `eth_getCode` returns non-0x for EVERY address on chain 5000. Record results in CLAUDE.md.
 
 ## Phase 1 — Rubric engine (1 day) — THE CORE, do before anything shiny
