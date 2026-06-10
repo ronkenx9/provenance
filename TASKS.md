@@ -13,12 +13,12 @@
       GATE: `eth_getCode` returns non-0x for EVERY address on chain 5000. Record results in CLAUDE.md.
 
 ## Phase 1 — Rubric engine (1 day) — THE CORE, do before anything shiny
-- [ ] `src/rubric/weights.json` — five dimensions per PRD §3, version field, weights sum=100.
+- [x] `src/rubric/weights.json` — five dimensions per PRD §3, version field, weights sum=100.
       GATE: unit test asserts sum.
-- [ ] `src/rubric/score.ts` — pure functions: inputs → dimension scores → composite → grade band.
+- [x] `src/rubric/score.ts` — pure functions: inputs → dimension scores → composite → grade band.
       No I/O, no Date.now(), no randomness.
       GATE: same input twice → byte-identical output (determinism test).
-- [ ] Edge tests: missing input → dimension flagged `unknown`, weight redistributed, flag surfaces
+- [x] Edge tests: missing input → dimension flagged `unknown`, weight redistributed, flag surfaces
       in output. Never silently default.
       GATE: `npm test` green, rubric files at 100% line coverage.
 - [ ] `data/assets/{usdy,meth,usde,fbtc}.json` — structured docs corpus. EVERY field carries a
