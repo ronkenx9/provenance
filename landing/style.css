@@ -122,11 +122,17 @@ nav .inner{
   text-align:center;position:relative;
   padding:0 clamp(1.25rem,5vw,5rem);
   overflow:hidden;
+  background:#000;
 }
+.hero-row{
+  display:flex;align-items:center;justify-content:center;
+  gap:clamp(1.2rem,3vw,3rem);
+}
+.h-side{white-space:nowrap}
 .hero .eyebrow{color:var(--amber);margin-bottom:2.2rem}
 .hero h1{
   font-family:var(--serif);font-weight:400;
-  font-size:clamp(3.4rem,11vw,9.5rem);
+  font-size:clamp(2.6rem,7vw,7rem);
   line-height:.96;letter-spacing:-.01em;color:var(--bone);
 }
 .hero .sub{margin-top:2.6rem;max-width:30rem;color:var(--mute-dark);font-size:.95rem}
@@ -146,10 +152,9 @@ nav .inner{
 .btn-ghost:hover{color:var(--bone)}
 
 .hero-seal{
-  position:absolute;
-  right:clamp(-9rem,-5vw,-3rem);bottom:clamp(-11rem,-8vw,-5rem);
-  width:clamp(20rem,36vw,36rem);height:auto;
-  will-change:transform;pointer-events:none;z-index:0;
+  position:relative;flex:0 0 auto;
+  width:clamp(11rem,22vw,19rem);height:auto;
+  will-change:transform;pointer-events:none;
 }
 .hero>p,.hero>h1,.hero>div:not(.hero-seal){position:relative;z-index:1}
 .seal-spin{animation:sealspin 60s linear infinite}
@@ -161,6 +166,10 @@ nav .inner{
   text-transform:uppercase;color:var(--mute-dark);
 }
 @media(max-height:760px){.hero-scroll{display:none}}
+@media(max-width:760px){
+  .hero-row{flex-direction:column;gap:.6rem}
+  .hero-seal{width:clamp(12rem,46vw,16rem)}
+}
 .hero-scroll::after{
   content:'';display:block;width:1px;height:34px;
   background:linear-gradient(var(--mute-dark),transparent);
@@ -383,7 +392,10 @@ nav .inner{
 .proof-text mark{
   background:transparent;color:inherit;position:relative;
   font-style:italic;white-space:nowrap;
+  display:inline-block;
+  transition:margin .5s cubic-bezier(.22,1,.36,1),transform .5s cubic-bezier(.22,1,.36,1);
 }
+.proof-text mark:hover{margin:0 .65em;transform:scale(1.08)}
 .proof-text mark.ok{
   border-bottom:2px solid var(--amber);
 }
@@ -450,7 +462,7 @@ nav .inner{
 /* ============================================================
    08 · FOOTER — giant CTA
 ============================================================ */
-.footer{position:relative;overflow:hidden;border-top:1px solid var(--line-dark)}
+.footer{position:relative;overflow:hidden;border-top:1px solid var(--line-dark);background:#000}
 .footer-cta{color:var(--bone)}
 .footer-rule{height:1px;background:var(--line-dark);margin:clamp(3rem,7vw,5.5rem) 0 3rem}
 .footer-grid{

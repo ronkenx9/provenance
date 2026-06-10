@@ -36,25 +36,29 @@
 
   const EASE = "expo.out";
 
-  /* ---------- hero intro timeline ---------- */
+  /* ---------- hero intro: coin first, text splits out from behind it ---------- */
   const intro = gsap.timeline({ defaults: { ease: EASE } });
   intro
-    .from(".hero h1 .line > span", { yPercent: 110, duration: 1.4, stagger: 0.12 }, 0.15)
-    .to(".hero .eyebrow", { opacity: 1, y: 0, duration: 1 }, 0.5)
-    .to(".hero .sub", { opacity: 1, y: 0, duration: 1 }, 0.65)
-    .to(".hero .cta-row", { opacity: 1, y: 0, duration: 1 }, 0.8)
-    .from(".hero-seal", { scale: 0.85, opacity: 0, rotate: -14, duration: 1.8, ease: "power3.out" }, 0.3)
-    .from("nav .inner", { y: -24, opacity: 0, duration: 1 }, 0.9);
+    .from(".hero-seal", { scale: 0.55, opacity: 0, duration: 1.5, ease: "power3.out" }, 0)
+    .from(".h-left .line > span", { xPercent: 70, opacity: 0, duration: 1.5 }, 0.85)
+    .from(".h-right .line > span", { xPercent: -70, opacity: 0, duration: 1.5 }, 0.85)
+    .to(".hero .eyebrow", { opacity: 1, y: 0, duration: 1 }, 1.15)
+    .to(".hero .sub", { opacity: 1, y: 0, duration: 1 }, 1.3)
+    .to(".hero .cta-row", { opacity: 1, y: 0, duration: 1 }, 1.45)
+    .from("nav .inner", { y: -24, opacity: 0, duration: 1 }, 1.5);
 
-  /* hero seal parallax */
-  gsap.to(".hero-seal", {
-    yPercent: 26, rotate: 10, ease: "none",
-    scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true },
+  /* on scroll, the halves tuck back behind the coin */
+  gsap.to(".h-left", {
+    xPercent: 14, opacity: 0.2, ease: "none",
+    scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom 35%", scrub: true },
   });
-  /* hero headline drifts up slightly faster than scroll */
-  gsap.to(".hero h1", {
-    yPercent: -18, opacity: 0.25, ease: "none",
-    scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom 30%", scrub: true },
+  gsap.to(".h-right", {
+    xPercent: -14, opacity: 0.2, ease: "none",
+    scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom 35%", scrub: true },
+  });
+  gsap.to(".hero-seal", {
+    yPercent: 12, ease: "none",
+    scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true },
   });
 
   /* ---------- generic reveals ---------- */
