@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PROVENANCE — Risk Ratings for Tokenized Assets</title>
+  <meta name="description" content="Deterministic, on-chain-anchored risk dossiers for tokenized assets on Mantle. Machine-readable ratings that humans can read and agents can act on.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0F0F11;
+      --surface: #1E1E24;
+      --surface-border: #333340;
+      --text-1: #EEEEEF;
+      --text-2: #A0A0AB;
+      --text-3: #7A7A85;
+      --accent: #3B82F6;
+      --accent-glow: #3B82F680;
+      --accent-secondary: #F59E0B;
+      --grade-aa: #22C55E;
+      --grade-a: #3B82F6;
+      --grade-b: #F59E0B;
+      --grade-c: #EF4444;
+      --grade-d: #991B1B;
+      --unknown: #6C6C74;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-2);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+
+    h1, h2, h3 { font-family: 'Syne', sans-serif; color: var(--text-1); font-weight: 800; }
+    h1 { font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.1; }
+    h2 { font-size: clamp(1.5rem, 3vw, 2.2rem); line-height: 1.2; }
+
+    section {
+      padding: 5rem 1.5rem;
+      border-top: 1px solid var(--surface-border);
+      max-width: 72rem;
+      margin: 0 auto;
+    }
+
+    /* --- NAV --- */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: var(--bg); border-bottom: 1px solid var(--surface-border);
+      backdrop-filter: blur(12px); background: rgba(15,15,17,0.85);
+    }
+    nav .inner {
+      max-width: 72rem; margin: 0 auto; padding: 1rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand { font-family: 'Syne', sans-serif; font-weight: 800; color: var(--text-1); font-size: 1.1rem; letter-spacing: 0.05em; }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a { color: var(--text-3); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text-1); }
+
+    /* --- HERO --- */
+    .hero {
+      padding: 10rem 1.5rem 5rem;
+      max-width: 72rem; margin: 0 auto;
+      border-top: none;
+    }
+    .hero .tagline { color: var(--text-2); font-size: 1.15rem; max-width: 36rem; margin-top: 1.5rem; }
+    .hero .accent-line { color: var(--accent); }
+
+    /* --- ASSET SWITCHER --- */
+    .asset-tabs {
+      display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem;
+    }
+    .asset-tab {
+      background: var(--surface); border: 1px solid var(--surface-border);
+      color: var(--text-3); padding: 0.6rem 1.2rem; border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+      letter-spacing: 0.1em; cursor: pointer; transition: all 0.2s;
+    }
+    .asset-tab:hover { border-color: var(--text-3); color: var(--text-2); }
+    .asset-tab.active { border-color: var(--accent); color: var(--accent); background: rgba(59,130,246,0.08); }
+
+    /* --- GRADE CARD --- */
+    .grade-card {
+      background: var(--surface); border: 1px solid var(--surface-border);
+      border-radius: 12px; padding: 2rem; margin-bottom: 2rem;
+      display: grid; grid-template-columns: auto 1fr; gap: 2rem; align-items: center;
+    }
+    .grade-badge {
+      width: 5.5rem; height: 5.5rem; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--bg);
+    }
+    .grade-meta .asset-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; color: var(--text-1); }
+    .grade-meta .composite { font-family: 'JetBrains Mono', monospace; font-size: 2rem; color: var(--text-1); font-weight: 500; }
+    .grade-meta .composite small { font-size: 0.9rem; color: var(--text-3); }
+    .flags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
+    .flag {
+      background: rgba(108,108,116,0.15); border: 1px solid var(--surface-border);
+      padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace; color: var(--text-3);
+    }
+
+    /* --- DIMENSION BARS --- */
+    .dimensions { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
+    .dim-row { display: grid; grid-template-columns: 9rem 1fr 3rem; gap: 1rem; align-items: center; }
+    .dim-label {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+      text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-3);
+    }
+    .dim-bar-bg {
+      height: 8px; background: var(--surface); border-radius: 4px; overflow: hidden;
+      position: relative;
+    }
+    .dim-bar-fill {
+      height: 100%; border-radius: 4px; transition: width 0.6s cubic-bezier(0.22,1,0.36,1);
+    }
+    .dim-bar-fill.unknown { background: repeating-linear-gradient(45deg, var(--unknown), var(--unknown) 4px, transparent 4px, transparent 8px); opacity: 0.3; width: 100%; }
+    .dim-score {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-2); text-align: right;
+    }
+    .dim-factors {
+      grid-column: 1 / -1; padding-left: 10rem;
+      font-size: 0.78rem; color: var(--text-3); line-height: 1.5;
+    }
+
+    /* --- NARRATIVE --- */
+    .narrative-block {
+      background: var(--surface); border: 1px solid var(--surface-border);
+      border-radius: 12px; padding: 2rem; margin-bottom: 2rem;
+      font-size: 0.92rem; line-height: 1.8; color: var(--text-2);
+    }
+
+    /* --- VERIFY LINK --- */
+    .verify-link {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      color: var(--accent); text-decoration: none; font-size: 0.85rem;
+      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.05em;
+      padding: 0.5rem 1rem; border: 1px solid var(--accent);
+      border-radius: 6px; transition: all 0.2s;
+    }
+    .verify-link:hover { background: rgba(59,130,246,0.1); transform: scale(0.97); }
+
+    /* --- METHODOLOGY --- */
+    .methodology {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+      gap: 1.5rem; margin-top: 2rem;
+    }
+    .method-card {
+      background: var(--surface); border: 1px solid var(--surface-border);
+      border-radius: 12px; padding: 1.5rem;
+    }
+    .method-card h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+    .method-card p { font-size: 0.85rem; color: var(--text-3); }
+
+    /* --- FOOTER --- */
+    footer {
+      border-top: 1px solid var(--surface-border);
+      padding: 3rem 1.5rem; max-width: 72rem; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+    }
+    footer p { font-size: 0.8rem; color: var(--text-3); }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    /* --- COMPARE TABLE --- */
+    .compare-table {
+      width: 100%; border-collapse: collapse; margin-top: 2rem;
+    }
+    .compare-table th, .compare-table td {
+      padding: 0.8rem 1rem; text-align: left; border-bottom: 1px solid var(--surface-border);
+      font-size: 0.85rem;
+    }
+    .compare-table th {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+      text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-3);
+    }
+    .compare-table td { color: var(--text-2); }
+    .compare-table tr:hover td { background: rgba(59,130,246,0.03); }
+
+    @media (max-width: 640px) {
+      .grade-card { grid-template-columns: 1fr; text-align: center; }
+      .dim-row { grid-template-columns: 1fr; gap: 0.3rem; }
+      .dim-factors { padding-left: 0; }
+      .nav-links { display: none; }
+      section { padding: 3rem 1rem; }
+    }
+
+    .loading { text-align: center; padding: 4rem; color: var(--text-3); }
+  </style>
+</head>
+<body>
+
+<nav><div class="inner">
+  <span class="nav-brand">PROVENANCE</span>
+  <div class="nav-links">
+    <a href="#ratings">Ratings</a>
+    <a href="#compare">Compare</a>
+    <a href="#methodology">Methodology</a>
+  </div>
+</div></nav>
+
+<section class="hero">
+  <p class="eyebrow">AI Ratings Agency for Tokenized Assets</p>
+  <h1>Risk dossiers that<br><span class="accent-line">agents can read.</span></h1>
+  <p class="tagline">Deterministic scoring engine. On-chain anchored. Every number computed, never hallucinated. Built on Mantle.</p>
+</section>
+
+<section id="ratings">
+  <p class="eyebrow">Dossier Viewer</p>
+  <h2 style="margin-bottom:2rem">Asset Ratings</h2>
+  <div class="asset-tabs" id="asset-tabs"></div>
+  <div id="dossier-view" class="loading">Loading ratings...</div>
+</section>
+
+<section id="compare">
+  <p class="eyebrow">Side by Side</p>
+  <h2>Asset Comparison</h2>
+  <table class="compare-table" id="compare-table">
+    <thead><tr>
+      <th>Asset</th><th>Grade</th><th>Composite</th>
+      <th>Collateral</th><th>Redemption</th><th>Liquidity</th>
+      <th>Concentration</th><th>Transparency</th>
+    </tr></thead>
+    <tbody id="compare-body"></tbody>
+  </table>
+</section>
+
+<section id="methodology">
+  <p class="eyebrow">How It Works</p>
+  <h2>Anti-Hallucination Architecture</h2>
+  <p style="max-width:40rem;margin-top:1rem;margin-bottom:2rem;color:var(--text-3)">The LLM never produces a score. Scores come from a deterministic rubric with published weights and quantifiable inputs. The LLM writes only the narrative layer, and every number in the prose is validated against computed values.</p>
+  <div class="methodology">
+    <div class="method-card">
+      <h3>Deterministic Engine</h3>
+      <p>Same inputs produce the same score, every time. Five dimensions, published weights, reproducible output. No randomness, no LLM in the scoring loop.</p>
+    </div>
+    <div class="method-card">
+      <h3>On-Chain Anchored</h3>
+      <p>Every dossier is published to DossierRegistry on Mantle Sepolia. The methodology hash pins the rubric version — a scoring change is publicly visible.</p>
+    </div>
+    <div class="method-card">
+      <h3>Validated Narratives</h3>
+      <p>Plain-English explanations are generated by AI, then validated: every number must match a computed value or the narrative is rejected and regenerated.</p>
+    </div>
+    <div class="method-card">
+      <h3>Unknown, Not Default</h3>
+      <p>When data is missing, the engine flags it unknown and redistributes weight. It never silently defaults — gaps are visible in every dossier.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>PROVENANCE — Mantle Turing Test 2026</p>
+  <p><a href="https://explorer.sepolia.mantle.xyz/address/0xd1534d20006248f4c2c290F83e6377b4A06037A9" target="_blank">Verify on-chain</a></p>
+</footer>
+
+
+<script>
+// Embedded ratings data — no API dependency
+const EMBEDDED_DATA = {"usdy":{"assetId":"usdy","symbol":"USDY","address":"0x5bE26527e817998A7206475496fDE1E68957c5A6","rubricVersion":"1.0.0","composite":60.2,"grade":"B","dimensions":[{"dimension":"collateral","score":90,"factors":["base 90 for backing type tbills","attestation fresh (1d)","fully collateralized (100.0%)"],"unknown":false,"effectiveWeight":38.5},{"dimension":"redemption","score":73,"factors":["base 75: on-chain redemption path exists","-2 notice period 1d","redemption volume unsourced — no usage bonus (R4: logged, not defaulted)"],"unknown":false,"effectiveWeight":30.8},{"dimension":"liquidity","score":10,"factors":["base 25: DEX TVL 0.02% of market cap ($5,254)","-15 exit $100k costs 1545902bps","volume data unavailable from source — no volume adjustment (R4: logged, not defaulted)"],"unknown":false,"effectiveWeight":30.8},{"dimension":"concentration","score":null,"factors":["no sourced inputs — dimension flagged unknown"],"unknown":true,"effectiveWeight":0},{"dimension":"transparency","score":null,"factors":["no sourced inputs — dimension flagged unknown"],"unknown":true,"effectiveWeight":0}],"flags":["dimension 'concentration' UNKNOWN — no sourced inputs; weight redistributed","dimension 'transparency' UNKNOWN — no sourced inputs; weight redistributed"],"narrative":"USDY receives a composite score of 60.2 and a grade of B, driven primarily by strong collateral fundamentals offset by critically thin on-chain liquidity on Mantle.\n\nCollateral quality scores 90 out of 100 at an effective weight of 38.5%. USDY is backed by short-duration US Treasuries and bank demand deposits, with daily transparency reports published by the verification agent Ankura Trust. The attestation age of 1 day reflects reporting cadence rather than a specific verified date — a conservative proxy. The collateral ratio stands at fully backed, though Ondo cites an additional first-loss equity cushion whose size could not be independently sourced this pass, so no over-collateralization credit is taken.\n\nRedemption mechanics score 73 at 30.8% weight. An on-chain redemption path exists with T+1 USD wire settlement, earning a 1-day notice period deduction. Redemption volume data was unavailable and therefore not defaulted — the engine grants no usage bonus without sourced evidence, per its unknown-handling rule.\n\nLiquidity is the critical weakness, scoring 10 at 30.8% weight. DEX total value locked on Mantle amounts to roughly $5,254, representing 0.02% of market cap. Exiting a $100,000 position would incur an estimated 1545902 basis points of slippage — a proxy derived from constant-product impact against the largest pool, not a routed quote. This is effectively illiquid for any meaningful position size.\n\nConcentration risk and transparency dimensions are flagged unknown due to unavailable on-chain holder data and unresolved contract verification status. Their weights were redistributed to the scored dimensions, which compresses the composite toward collateral and redemption strength while masking potential risks in governance concentration and disclosure quality. A future update sourcing Mantle explorer holder data and Sourcify verification would materially affect this rating.","registry":"0xd1534d20006248f4c2c290F83e6377b4A06037A9","explorerUrl":"https://explorer.sepolia.mantle.xyz/address/0xd1534d20006248f4c2c290F83e6377b4A06037A9"},"meth":{"assetId":"meth","symbol":"mETH","address":"0xcDA86A272531e8640cD7F1a92c01839911B90bb0","rubricVersion":"1.0.0","composite":66.1,"grade":"B","dimensions":[{"dimension":"collateral","score":78,"factors":["base 78 for backing type eth_lst","attestation fresh (0d)","fully collateralized (100.0%)"],"unknown":false,"effectiveWeight":38.5},{"dimension":"redemption","score":67,"factors":["base 75: on-chain redemption path exists","-8 notice period 4d","redemption volume unsourced — no usage bonus (R4: logged, not defaulted)"],"unknown":false,"effectiveWeight":30.8},{"dimension":"liquidity","score":50,"factors":["base 65: DEX TVL 4.37% of market cap ($2,222,876)","-15 exit $100k costs 1864bps","volume data unavailable from source — no volume adjustment (R4: logged, not defaulted)"],"unknown":false,"effectiveWeight":30.8},{"dimension":"concentration","score":null,"factors":["no sourced inputs — dimension flagged unknown"],"unknown":true,"effectiveWeight":0},{"dimension":"transparency","score":null,"factors":["no sourced inputs — dimension flagged unknown"],"unknown":true,"effectiveWeight":0}],"flags":["dimension 'concentration' UNKNOWN — no sourced inputs; weight redistributed","dimension 'transparency' UNKNOWN — no sourced inputs; weight redistributed"],"narrative":"mETH receives a composite score of 66.1 and a grade of B, reflecting solid collateral backing and functional redemption mechanics tempered by moderate liquidity friction on Mantle DEXes.\n\nCollateral quality scores 78 at an effective weight of 38.5%. As an ETH liquid staking token operated by Mantle itself, mETH carries the base profile of an LST — exposure to Ethereum staking risk plus protocol-layer smart contract risk. Attestation freshness is reported at 0 days, and the collateral ratio is fully backed at par. The LST structure means collateral value fluctuates with ETH price, unlike treasury-backed stablecoins with a fixed par target.\n\nRedemption scores 67 at 30.8% weight. An on-chain unstaking path exists, but the 4-day notice period imposes a meaningful delay penalty. Redemption volume data was not sourced, so the engine applies no usage bonus — the path exists but its real-world throughput is unverified.\n\nLiquidity scores 50 at 30.8% weight. DEX TVL on Mantle sits at $2,222,876, covering 4.37% of market cap — a reasonable ratio but still thin in absolute terms. Exiting a $100,000 position costs an estimated 1864 basis points, derived from constant-product impact modeling rather than a routed quote.\n\nConcentration risk and transparency dimensions are flagged unknown. No on-chain holder concentration data or contract verification status could be sourced for this assessment. Their combined weight was redistributed to the three scored dimensions. Given that Mantle Network itself operates the mETH protocol, a future concentration assessment should examine issuer-holder overlap carefully — the protocol operator being the chain operator introduces correlation risk that this rating cannot yet quantify.","registry":"0xd1534d20006248f4c2c290F83e6377b4A06037A9","explorerUrl":"https://explorer.sepolia.mantle.xyz/address/0xd1534d20006248f4c2c290F83e6377b4A06037A9"},"usde":{"assetId":"usde","symbol":"USDe","address":"0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34","rubricVersion":"1.0.0","composite":72.6,"grade":"A","dimensions":[{"dimension":"collateral","score":60,"factors":["base 60 for backing type synthetic_delta_neutral","attestation fresh (31d)","fully collateralized (100.0%)"],"unknown":false,"effectiveWeight":31.3},{"dimension":"redemption","score":85,"factors":["base 75: on-chain redemption path exists","+10 same-day settlement","redemption volume unsourced — no usage bonus (R4: logged, not defaulted)"],"unknown":false,"effectiveWeight":25},{"dimension":"liquidity","score":65,"factors":["base 80: DEX TVL 25.11% of market cap ($28,306,411)","-15 exit $100k costs 320bps","volume data unavailable from source — no volume adjustment (R4: logged, not defaulted)"],"unknown":false,"effectiveWeight":25},{"dimension":"concentration","score":null,"factors":["no sourced inputs — dimension flagged unknown"],"unknown":true,"effectiveWeight":0},{"dimension":"transparency","score":87,"factors":["base 75: attestations every 31d","+5 contracts verified","+7 docs completeness 85%"],"unknown":false,"effectiveWeight":18.8}],"flags":["dimension 'concentration' UNKNOWN — no sourced inputs; weight redistributed"],"narrative":"USDe receives a composite score of 72.6 and a grade of A, the highest-graded stablecoin in this assessment — though that grade reflects strong liquidity and redemption mechanics rather than collateral safety.\n\nCollateral quality scores 60 at an effective weight of 31.3%. USDe is a synthetic delta-neutral dollar: it holds staked ETH and shorts equivalent perpetual futures to maintain its peg. This mechanism is fundamentally different from treasury-backed tokens like USDY. The strategy carries basis risk, funding rate inversion risk, and counterparty exposure to centralized exchanges holding the short leg. Attestation age stands at 31 days, reflecting monthly custodian report cadence — a proxy, not a specific report date.\n\nRedemption scores 85 at 25% weight, the strongest dimension. An on-chain redemption path exists with same-day settlement, earning a bonus for speed. However, direct minting and redemption is restricted to KYC-whitelisted approved parties; retail holders exit through secondary DEX liquidity rather than the primary path. Redemption volume data was not sourced, so no usage bonus is applied.\n\nLiquidity scores 65 at 25% weight. DEX TVL on Mantle reaches $28,306,411 — 25.11% of market cap — the deepest pool coverage of any asset in this assessment. Exiting a $100,000 position costs an estimated 320 basis points, materially better than peers.\n\nTransparency scores 87 at 18.8% weight. Contracts are verified on-chain, and documentation completeness reaches 85%. Monthly attestations provide regular but not continuous oversight.\n\nConcentration risk is flagged unknown due to unavailable holder data; its weight was redistributed. The core risk an agent should weigh: USDe's collateral mechanism is structurally complex and its failure mode — a sustained negative funding rate — is correlated with the broader crypto market stress that would make exit liquidity most needed.","registry":"0xd1534d20006248f4c2c290F83e6377b4A06037A9","explorerUrl":"https://explorer.sepolia.mantle.xyz/address/0xd1534d20006248f4c2c290F83e6377b4A06037A9"},"fbtc":{"assetId":"fbtc","symbol":"FBTC","address":"0xC96dE26018A54D51c097160568752c4E3BD6C364","rubricVersion":"1.0.0","composite":76.7,"grade":"A","dimensions":[{"dimension":"collateral","score":72,"factors":["base 72 for backing type btc_custodial","attestation fresh (0d)","fully collateralized (100.0%)"],"unknown":false,"effectiveWeight":41.7},{"dimension":"redemption","score":null,"factors":["no sourced inputs — dimension flagged unknown"],"unknown":true,"effectiveWeight":0},{"dimension":"liquidity","score":65,"factors":["base 80: DEX TVL 8.44% of market cap ($1,357,156)","-15 exit $100k costs 1488bps","volume data unavailable from source — no volume adjustment (R4: logged, not defaulted)"],"unknown":false,"effectiveWeight":33.3},{"dimension":"concentration","score":null,"factors":["no sourced inputs — dimension flagged unknown"],"unknown":true,"effectiveWeight":0},{"dimension":"transparency","score":100,"factors":["base 90: daily attestations","+5 contracts verified","+6 docs completeness 80%"],"unknown":false,"effectiveWeight":25}],"flags":["dimension 'redemption' UNKNOWN — no sourced inputs; weight redistributed","dimension 'concentration' UNKNOWN — no sourced inputs; weight redistributed"],"narrative":"FBTC receives a composite score of 76.7 and a grade of A, the highest composite in this assessment. The rating is anchored by strong transparency practices and solid custodial collateral, though two unknown dimensions compress the scoring base.\n\nCollateral quality scores 72 at an effective weight of 41.7% — the heaviest single dimension influence across all four assets, because two other dimensions are unknown and their weight is redistributed here. FBTC is backed by custodied Bitcoin, fully collateralized at par. Attestation freshness is 0 days, reflecting real-time or daily proof-of-reserve reporting. The custodial model carries counterparty risk tied to the custodian's operational security and insurance coverage, distinct from the smart contract risk of LSTs or the basis risk of synthetic dollars.\n\nLiquidity scores 65 at 33.3% weight. DEX TVL on Mantle is $1,357,156, representing 8.44% of market cap — a moderate ratio. Exiting a $100,000 position incurs an estimated 1488 basis points of slippage, derived from constant-product impact modeling. Volume data was unavailable and not defaulted.\n\nTransparency scores 100 at 25% weight — the only perfect dimension score in this assessment. Daily attestations, verified contracts, and 80% documentation completeness combine for a maximum rating. This reflects FBTC's commitment to public proof-of-reserve infrastructure.\n\nRedemption mechanics and concentration risk are both flagged unknown. No sourced data on the primary redemption path, notice period, or holder concentration was available for FBTC on Mantle. Their combined weight was redistributed to the three scored dimensions. The absence of redemption data is the most material gap: without a verified exit path, holders depend entirely on secondary DEX liquidity, which at current depth cannot absorb large positions without severe slippage.","registry":"0xd1534d20006248f4c2c290F83e6377b4A06037A9","explorerUrl":"https://explorer.sepolia.mantle.xyz/address/0xd1534d20006248f4c2c290F83e6377b4A06037A9"}};
+</script>
+<script>
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:3000'
+  : (window.API_BASE || '');
+
+const REGISTRY = '0xd1534d20006248f4c2c290F83e6377b4A06037A9';
+const EXPLORER = 'https://explorer.sepolia.mantle.xyz';
+
+const GRADE_COLORS = { AA: '#22C55E', A: '#3B82F6', B: '#F59E0B', C: '#EF4444', D: '#991B1B' };
+
+function gradeColor(g) { return GRADE_COLORS[g] || '#6C6C74'; }
+
+function barColor(score) {
+  if (score === null) return 'var(--unknown)';
+  if (score >= 85) return '#22C55E';
+  if (score >= 70) return '#3B82F6';
+  if (score >= 50) return '#F59E0B';
+  return '#EF4444';
+}
+
+// Embedded data — no API dependency for static deploy
+const RATINGS_DATA = {
+  usdy: null, meth: null, usde: null, fbtc: null
+};
+
+async function fetchRatings() {
+  // Use embedded data (static build)
+  for (const [id, data] of Object.entries(EMBEDDED_DATA || {})) {
+    RATINGS_DATA[id] = data;
+  }
+  // Also try API for dev mode
+  if (!Object.values(RATINGS_DATA).some(Boolean)) {
+    try {
+      for (const id of Object.keys(RATINGS_DATA)) {
+        const res = await fetch(API_BASE + '/rating/' + id);
+        if (res.ok) RATINGS_DATA[id] = await res.json();
+      }
+    } catch {}
+  }
+} catch {}
+
+  // Also fetch full dossiers with narratives
+  for (const id of Object.keys(RATINGS_DATA)) {
+    try {
+      const res = await fetch(API_BASE + '/rating/' + id);
+      if (res.ok) { RATINGS_DATA[id] = await res.json(); }
+    } catch {}
+  }
+}
+
+function renderTabs(activeId) {
+  const container = document.getElementById('asset-tabs');
+  container.innerHTML = '';
+  for (const id of Object.keys(RATINGS_DATA)) {
+    const d = RATINGS_DATA[id];
+    if (!d) continue;
+    const tab = document.createElement('button');
+    tab.className = 'asset-tab' + (id === activeId ? ' active' : '');
+    tab.textContent = d.symbol + ' · ' + d.grade;
+    tab.onclick = () => renderDossier(id);
+    container.appendChild(tab);
+  }
+}
+
+function renderDossier(assetId) {
+  const d = RATINGS_DATA[assetId];
+  if (!d) return;
+  renderTabs(assetId);
+
+  const gc = gradeColor(d.grade);
+  const dims = d.dimensions || [];
+
+  let html = `
+    <div class="grade-card">
+      <div class="grade-badge" style="background:${gc}">${d.grade}</div>
+      <div class="grade-meta">
+        <div class="asset-name">${d.symbol}</div>
+        <div class="composite">${d.composite}<small> / 100</small></div>
+        ${d.address ? `<div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text-3);margin-top:0.3rem">${d.address.slice(0,6)}...${d.address.slice(-4)}</div>` : ''}
+        ${d.flags && d.flags.length ? `<div class="flags">${d.flags.map(f => `<span class="flag">${f.replace(/dimension '(\w+)'/, '$1')}</span>`).join('')}</div>` : ''}
+      </div>
+    </div>
+    <div class="dimensions">
+  `;
+
+  for (const dim of dims) {
+    const isUnknown = dim.unknown;
+    const score = isUnknown ? null : dim.score;
+    const factors = dim.factors || [];
+    html += `
+      <div class="dim-row">
+        <span class="dim-label">${dim.dimension}</span>
+        <div class="dim-bar-bg">
+          <div class="dim-bar-fill ${isUnknown ? 'unknown' : ''}" style="width:${isUnknown ? '100' : score}%;background:${isUnknown ? '' : barColor(score)}"></div>
+        </div>
+        <span class="dim-score">${isUnknown ? '—' : score}</span>
+      </div>
+      ${factors.length ? `<div class="dim-factors">${factors.map(f => '· ' + f).join('<br>')}</div>` : ''}
+    `;
+  }
+  html += '</div>';
+
+  // Narrative
+  if (d.narrative) {
+    html += `
+      <p class="eyebrow" style="margin-bottom:0.8rem">Risk Narrative</p>
+      <div class="narrative-block">${d.narrative.split('\n\n').map(p => '<p style="margin-bottom:1rem">' + p + '</p>').join('')}</div>
+    `;
+  }
+
+  // Verify link
+  html += `
+    <a class="verify-link" href="${EXPLORER}/address/${REGISTRY}" target="_blank" rel="noopener">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Verify on-chain · Mantle Sepolia
+    </a>
+  `;
+
+  document.getElementById('dossier-view').innerHTML = html;
+}
+
+function renderCompare() {
+  const tbody = document.getElementById('compare-body');
+  const dimNames = ['collateral', 'redemption', 'liquidity', 'concentration', 'transparency'];
+
+  for (const id of Object.keys(RATINGS_DATA)) {
+    const d = RATINGS_DATA[id];
+    if (!d) continue;
+    const tr = document.createElement('tr');
+    const dimMap = {};
+    for (const dim of (d.dimensions || [])) { dimMap[dim.dimension] = dim; }
+
+    tr.innerHTML = `
+      <td style="font-weight:600;color:var(--text-1)">${d.symbol}</td>
+      <td><span style="color:${gradeColor(d.grade)};font-weight:700;font-family:'Syne',sans-serif">${d.grade}</span></td>
+      <td style="font-family:'JetBrains Mono',monospace">${d.composite}</td>
+      ${dimNames.map(n => {
+        const dim = dimMap[n];
+        if (!dim || dim.unknown) return '<td style="color:var(--unknown)">—</td>';
+        return `<td style="font-family:'JetBrains Mono',monospace;color:${barColor(dim.score)}">${dim.score}</td>`;
+      }).join('')}
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+// Boot
+(async () => {
+  await fetchRatings();
+  const firstId = Object.keys(RATINGS_DATA).find(id => RATINGS_DATA[id]);
+  if (firstId) {
+    renderDossier(firstId);
+    renderCompare();
+  } else {
+    document.getElementById('dossier-view').innerHTML = '<p style="color:var(--text-3)">Could not load ratings. Start the API: <code>npm run api</code></p>';
+  }
+})();
+</script>
+
+</body>
+</html>
