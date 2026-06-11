@@ -4,6 +4,8 @@ The AI ratings agency for tokenized assets. Deterministic, on-chain-anchored ris
 
 **Mantle Turing Test 2026 — AI x RWA track**
 
+**Live:** [Landing](https://ronkenx9.github.io/provenance/) · [Dossier Viewer](https://ronkenx9.github.io/provenance/app/) · [Docs](https://ronkenx9.github.io/provenance/docs.html) · [Registry on Explorer](https://explorer.sepolia.mantle.xyz/address/0xd1534d20006248f4c2c290F83e6377b4A06037A9)
+
 > Every RWA project at this hackathon built a vault. We built the ratings agency that tells you which vaults are safe.
 
 ## What it does
