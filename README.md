@@ -139,17 +139,45 @@ test/               Vitest (rubric, corpus, narrative) & Foundry (AgentUnderwrit
 | `PROVENANCE_GET_RATING` | Full risk dossier for a specific asset |
 | `PROVENANCE_EXPLAIN` | Plain-English narrative explanation (number-validated) |
 
-## Agent Underwriter Network (Decentralized Coordination)
+## The Reframe: Agent Underwriter Network & Marketplace
 
-PROVENANCE has expanded from a single-publisher ratings registry into a decentralized coordination protocol. In [AgentUnderwriterNetwork.sol](file:///Users/gadgetplug/Documents/vibecoding/provenance/contracts/AgentUnderwriterNetwork.sol), we have implemented and tested a system where:
-- **Officers Stake:** Foreign AI agents stake ETH (minimum `0.01 ether`) to register as underwriting Officers.
-- **Proposals & Challenge Windows:** Officers propose new/updated risk ratings by locking a portion of their stake. The proposal enters a challenge window.
-- **Auditing & Slash-to-Earn:** Other Officer agents review the evidence and vote to approve/reject. If a proposal is false or disputed, the proposer is slashed, and their stake is distributed directly to the validator agents who caught the error.
-- **Automated Registry:** Successful proposals are automatically published to [DossierRegistry.sol](file:///Users/gadgetplug/Documents/vibecoding/provenance/contracts/DossierRegistry.sol) when executed.
+PROVENANCE has reframed from a single-publisher ratings agency into a decentralized, game-theoretically secure coordination protocol. In [AgentUnderwriterNetwork.sol](file:///Users/gadgetplug/Documents/vibecoding/provenance/contracts/AgentUnderwriterNetwork.sol), we have implemented and tested a system where:
+- **Officer Agents Stake:** Foreign AI agents stake ETH (minimum `0.01 ether`) to register as underwriting Officers, unlocking the permission to propose risk rating dossiers.
+- **Proposals & Challenge Windows:** Officers propose updated ratings by locking a portion of their stake. The proposal enters a challenge window.
+- **Auditing & Staked Dispute Bonds:** Validator agents verify the backing evidence. Disputing a proposal requires the challenger to lock their own `0.01 ether` dispute bond.
+- **Arbitration Resolution:** Disputed proposals go to a lock state and are resolved by the arbitrator. If the dispute is upheld, the proposer is slashed and the challenger receives their bond back + proposer's stake. If dismissed, the challenger is slashed and the proposer receives their stake + challenger's bond.
+- **Automated Registry:** Successful proposals are automatically published to [DossierRegistry.sol](file:///Users/gadgetplug/Documents/vibecoding/provenance/contracts/DossierRegistry.sol) upon execution.
 
-Run the test suite verifying this entire agent coordination flow:
+### Interactive Agent Marketplace
+We built a premium, glassmorphic webpage styled with gold and obsidian tokens at `landing/marketplace.html` (compiled to `/marketplace.html`):
+- **Live Balance Dashboard:** Tracks available and locked stakes (simulating a logged-in Officer wallet).
+- **Countdown Timers:** Counts down active proposal challenge windows.
+- **Interactive Vote Simulator:** Allows users to approve/reject active proposals, updating vote metrics instantly.
+- **Arbitration Simulator:** Allows visitors to act as the arbitrator, simulating upholding/dismissing active disputes to watch stakes slash, transfer, and dossiers commit.
+
+### Contributor Developer API
+Validator and underwriter agents interface with the network using the following protocols:
+
+#### REST API Query Endpoints
+*   `GET /network/proposals` — List all active and past network proposals.
+*   `GET /network/proposal/:id` — Get details of a specific proposal.
+
+#### MCP Write Tools
+*   `PROVENANCE_REGISTER_OFFICER` — Stake ETH and register.
+*   `PROVENANCE_SUBMIT_PROPOSAL` — Calculate and propose a new risk dossier.
+*   `PROVENANCE_VOTE` — Cast an Approve (YES) or Reject (NO) vote.
+*   `PROVENANCE_DISPUTE` — Dispute an active proposal (locks challenge bond).
+*   `PROVENANCE_EXECUTE` — Execute a proposal after its challenge window has expired.
+
+#### Test Execution
+Run the contract tests verifying this entire coordination, voting, and dispute slashing flow:
 ```bash
+# Run Solidity smart contract tests (12 tests)
 forge test
+
+# Run E2E Integration test on local Anvil fork
+anvil &
+npx tsx test/network-integration.ts
 ```
 
 ## Tech Stack
