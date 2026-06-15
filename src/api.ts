@@ -12,6 +12,7 @@ import { ASSET_IDS, loadAssetDoc, toRubricInputs } from "./corpus/load.js";
 import { buildDossier } from "./rubric/score.js";
 import { toProbeData, type ProbeResult } from "./probes/asset-probe.js";
 import { loadPregenerated } from "./narrative/generate.js";
+import { fetchProposals } from "./anchor/network.js";
 
 const PORT = Number(process.env.PORT) || 3000;
 const SNAP_DIR = join(process.cwd(), "data", "snapshots");
@@ -78,6 +79,31 @@ const server = createServer((req, res) => {
     return;
   }
 
+  const proposalsMatch = url.pathname.match(/^\/network\/proposals$/);
+  if (proposalsMatch) {
+    const netAddr = process.env.NETWORK_ADDRESS;
+    if (!netAddr) { json(res, 400, { error: "NETWORK_ADDRESS not configured in environment" }); return; }
+    fetchProposals({ networkAddress: netAddr as `0x${string}` })
+      .then((proposals) => json(res, 200, { proposals }))
+      .catch((err) => json(res, 500, { error: err.message }));
+    return;
+  }
+
+  const proposalMatch = url.pathname.match(/^\/network\/proposal\/(\d+)$/);
+  if (proposalMatch) {
+    const id = Number(proposalMatch[1]);
+    const netAddr = process.env.NETWORK_ADDRESS;
+    if (!netAddr) { json(res, 400, { error: "NETWORK_ADDRESS not configured in environment" }); return; }
+    fetchProposals({ networkAddress: netAddr as `0x${string}` })
+      .then((proposals) => {
+        const found = proposals.find((p) => p.id === id);
+        if (!found) { json(res, 404, { error: `Proposal not found: ${id}` }); }
+        else { json(res, 200, found); }
+      })
+      .catch((err) => json(res, 500, { error: err.message }));
+    return;
+  }
+
   // Health check
   if (url.pathname === "/health") {
     json(res, 200, { status: "ok", service: "provenance", assets: ASSET_IDS.length });
@@ -92,7 +118,17 @@ const server = createServer((req, res) => {
     return;
   }
 
-  json(res, 404, { error: "Not found", routes: ["GET /", "GET /ratings", "GET /rating/:asset", "GET /narrative/:asset"] });
+  json(res, 404, {
+    error: "Not found",
+    routes: [
+      "GET /",
+      "GET /ratings",
+      "GET /rating/:asset",
+      "GET /narrative/:asset",
+      "GET /network/proposals",
+      "GET /network/proposal/:id"
+    ]
+  });
 });
 
 server.listen(PORT, () => { console.log(`PROVENANCE API listening on http://localhost:${PORT}`); });

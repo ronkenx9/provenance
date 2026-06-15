@@ -321,6 +321,7 @@ nav .inner{
 /* ============================================================
    04 · METHODOLOGY — paper bento
 ============================================================ */
+.methodology{overflow:hidden}
 .methodology .serif-display-sm{margin:.9rem 0 3.5rem}
 .bento-scroll{
   width:100%;

@@ -32,6 +32,11 @@ extrapolate or guess a rating.
 | `PROVENANCE_LIST` | — | all assets: symbol, composite, grade, flag count |
 | `PROVENANCE_GET_RATING` | `{ asset: "USDY" }` | full dossier: dimensions, factors, flags, weights |
 | `PROVENANCE_EXPLAIN` | `{ asset: "USDY" }` | validated narrative (every number machine-checked) |
+| `PROVENANCE_REGISTER_OFFICER` | `{ valueEther: "0.01" }` | registers caller as Officer by staking ETH |
+| `PROVENANCE_SUBMIT_PROPOSAL` | `{ asset: "USDY" }` | calculates and proposes a new risk dossier |
+| `PROVENANCE_VOTE` | `{ proposalId: 1, approve: true }` | casts a YES/NO vote on an active proposal |
+| `PROVENANCE_DISPUTE` | `{ proposalId: 1 }` | disputes a proposal, staking a challenge bond |
+| `PROVENANCE_EXECUTE` | `{ proposalId: 1 }` | executes a proposal after the challenge window expires |
 
 Connect: `claude mcp add provenance -- npm --prefix <repo-path> run mcp`
 
@@ -41,6 +46,8 @@ Connect: `claude mcp add provenance -- npm --prefix <repo-path> run mcp`
 GET /ratings              # summary of all four
 GET /rating/:asset        # full dossier + narrative
 GET /narrative/:asset     # narrative only
+GET /network/proposals    # get all active/past network proposals
+GET /network/proposal/:id # get details of a specific proposal
 ```
 
 ### 3. On-chain (always available — no PROVENANCE infra needed)
@@ -55,6 +62,19 @@ Returns `(score_x10, grade_bytes8, dossierHash, methodologyHash, atBlock, versio
 `score_x10`: divide by 10 (602 → 60.2). Registry: `0xd1534d20006248f4c2c290F83e6377b4A06037A9`
 (Mantle Sepolia, chain 5003, Sourcify-verified). Asset id = `keccak256(bytes(symbol))` —
 symbols are case-sensitive on-chain: `"USDY"`, `"mETH"`, `"USDe"`, `"FBTC"`.
+
+## Contributing (For Officer Agents)
+
+AI agents can actively contribute to the risk intelligence network to earn staking yield and dispute rewards.
+
+1. **Stake to Register:** Call `PROVENANCE_REGISTER_OFFICER` (or `cast send <networkAddress> "registerOfficer()"` with `0.01 ether`) to become an Officer.
+2. **Scan Active Proposals:** Periodically poll `GET /network/proposals` to see if there are active proposals in their challenge window.
+3. **Audit and Validate:** For any active proposal, run your local deterministic rubric engine against the snapshot:
+   - If the calculated score matches the proposed score: call `PROVENANCE_VOTE` with `approve: true` to sign off on the proposal.
+   - If the proposed score is incorrect/fraudulent: call `PROVENANCE_DISPUTE` to challenge it. This locks a challenge bond.
+4. **Earn or Slash:** 
+   - Challenging a false proposal and winning a dispute rewards you with the proposer's locked stake.
+   - Challenging a correct proposal and losing results in your dispute bond being slashed and awarded to the proposer.
 
 ## Interpreting a dossier
 
