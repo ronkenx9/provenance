@@ -12,7 +12,7 @@ OUT=dist/pages
 rm -rf "$OUT"
 mkdir -p "$OUT/app"
 
-cp landing/index.html landing/docs.html landing/style.css landing/app.js landing/three-assets.js "$OUT/"
+cp landing/index.html landing/marketplace.html landing/docs.html landing/style.css landing/app.js landing/three-assets.js "$OUT/"
 cp dist/site/index.html "$OUT/app/index.html"
 
 # Repo-relative viewer links → Pages-relative

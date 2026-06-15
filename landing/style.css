@@ -558,4 +558,421 @@ body.webgl-on .seal-fallback{display:none}
 .coin{position:relative;overflow:visible}
 body.webgl-on .coin{background:none!important;box-shadow:none}
 body.webgl-on .coin::before{display:none}
-body.webgl-on .coin span{opacity:0}
+body.webgl-on .coin span {
+  opacity: 0;
+}
+
+/* ============================================================
+   09 · REFRAME (Decentralized Network UI)
+============================================================ */
+.reframe-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: clamp(2rem, 5vw, 6rem);
+  align-items: start;
+}
+.reframe-p {
+  color: var(--mute-paper);
+  margin-top: 1.8rem;
+  font-size: 1.05rem;
+  max-width: 32rem;
+}
+.reframe-bento {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+.reframe-card {
+  background: var(--bone-2);
+  border: 1px solid var(--line-paper);
+  padding: 2.2rem;
+  border-radius: 12px;
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s;
+}
+.reframe-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(16, 17, 20, 0.05);
+}
+.reframe-card h3 {
+  font-family: var(--grotesk);
+  font-weight: 500;
+  font-size: 1.15rem;
+  color: var(--ink-on-paper);
+  margin-bottom: 0.6rem;
+}
+.reframe-card p {
+  color: var(--mute-paper);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+.reframe-num {
+  position: absolute;
+  top: 1.8rem;
+  right: 2.2rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--mute-paper);
+  opacity: 0.6;
+}
+@media(max-width: 900px) {
+  .reframe-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   10 · MARKETPLACE UI & INTERACTIVE STATES
+============================================================ */
+.market-header {
+  min-height: 40svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8rem 1.25rem 2rem;
+  background: #000;
+}
+.market-header .eyebrow {
+  color: var(--amber);
+  margin-bottom: 1.5rem;
+}
+.market-header h1 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  color: var(--bone);
+  line-height: 1.1;
+}
+.market-header p {
+  margin-top: 1.2rem;
+  color: var(--mute-dark);
+  font-size: 0.95rem;
+  max-width: 32rem;
+}
+
+/* Profiles & Balances Header Bar */
+.profile-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--line-dark);
+  padding: 1.5rem clamp(1.25rem, 5vw, 5rem);
+  background: var(--ink-2);
+  margin-bottom: 2rem;
+}
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.profile-stat {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+.profile-stat span {
+  color: var(--amber);
+  font-weight: 500;
+}
+
+/* Grid & Cards */
+.proposal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(28rem, 1fr));
+  gap: 2rem;
+  margin-bottom: 6rem;
+}
+@media(max-width: 600px) {
+  .proposal-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.proposal-card {
+  background: var(--ink-2);
+  border: 1px solid var(--line-dark);
+  border-radius: 12px;
+  padding: 2.2rem;
+  position: relative;
+  transition: border-color 0.35s, transform 0.35s;
+  overflow: hidden;
+}
+.proposal-card:hover {
+  border-color: var(--mute-dark);
+  transform: translateY(-2px);
+}
+
+/* Badges */
+.card-badge {
+  position: absolute;
+  top: 2.2rem;
+  right: 2.2rem;
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.8rem;
+  border-radius: 4px;
+  font-weight: 500;
+}
+.badge-active {
+  background: rgba(62, 155, 107, 0.15);
+  color: var(--green);
+  border: 1px solid rgba(62, 155, 107, 0.3);
+}
+.badge-executed {
+  background: rgba(140, 140, 140, 0.1);
+  color: var(--mute-dark);
+  border: 1px solid rgba(140, 140, 140, 0.2);
+}
+.badge-disputed {
+  background: rgba(192, 57, 67, 0.15);
+  color: var(--red);
+  border: 1px solid rgba(192, 57, 67, 0.3);
+}
+.badge-slashed {
+  background: rgba(192, 57, 67, 0.25);
+  color: #ff5555;
+  border: 1px solid var(--red);
+}
+
+/* Proposal content */
+.proposal-asset {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-bottom: 1.6rem;
+}
+.prop-coin {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--grotesk);
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+.prop-info h3 {
+  font-family: var(--serif);
+  font-size: 1.8rem;
+  font-weight: 400;
+  line-height: 1.1;
+}
+.prop-proposer {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--mute-dark);
+  letter-spacing: 0.05em;
+  margin-top: 0.2rem;
+}
+.proposal-scores {
+  display: flex;
+  gap: 2.5rem;
+  margin-bottom: 1.8rem;
+  border-bottom: 1px solid var(--ink-3);
+  padding-bottom: 1.2rem;
+}
+.score-metric {
+  display: flex;
+  flex-direction: column;
+}
+.score-label {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  color: var(--mute-dark);
+  letter-spacing: 0.1em;
+}
+.score-val {
+  font-size: 1.8rem;
+  font-weight: 400;
+  color: var(--bone);
+  margin-top: 0.2rem;
+}
+.score-val.grade {
+  color: var(--amber);
+  font-family: var(--serif);
+  font-size: 2.1rem;
+}
+
+/* Stats list */
+.proposal-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 2rem;
+}
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+}
+.stat-lbl {
+  color: var(--mute-dark);
+}
+.stat-val {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+}
+.stat-val.amber {
+  color: var(--amber);
+}
+
+/* Actions */
+.proposal-actions {
+  display: flex;
+  gap: 0.8rem;
+}
+.proposal-actions button {
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.btn-approve {
+  background: var(--ink-3);
+  border: 1px solid var(--line-dark);
+  color: var(--bone);
+}
+.btn-approve:hover {
+  background: rgba(62, 155, 107, 0.1);
+  border-color: var(--green);
+  color: var(--green);
+}
+.btn-reject {
+  background: var(--ink-3);
+  border: 1px solid var(--line-dark);
+  color: var(--bone);
+}
+.btn-reject:hover {
+  background: rgba(192, 57, 67, 0.1);
+  border-color: var(--red);
+  color: var(--red);
+}
+.btn-dispute {
+  background: rgba(192, 57, 67, 0.1);
+  border: 1px solid var(--red);
+  color: var(--red);
+}
+.btn-dispute:hover {
+  background: var(--red);
+  color: var(--bone);
+}
+.btn-disabled {
+  background: var(--ink-3)!important;
+  border-color: var(--ink-3)!important;
+  color: var(--line-dark)!important;
+  cursor: not-allowed!important;
+}
+
+/* Dispute resolution simulator buttons */
+.resolver-actions {
+  display: flex;
+  gap: 0.8rem;
+  width: 100%;
+}
+.btn-resolve-uphold {
+  background: rgba(192, 57, 67, 0.15);
+  border: 1px solid var(--red);
+  color: var(--red);
+}
+.btn-resolve-uphold:hover {
+  background: var(--red);
+  color: var(--bone);
+}
+.btn-resolve-dismiss {
+  background: rgba(62, 155, 107, 0.15);
+  border: 1px solid var(--green);
+  color: var(--green);
+}
+.btn-resolve-dismiss:hover {
+  background: var(--green);
+  color: var(--ink);
+}
+
+/* Modal */
+.dispute-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s;
+}
+.dispute-modal-overlay.is-open {
+  opacity: 1;
+  pointer-events: all;
+}
+.dispute-modal {
+  background: var(--ink-2);
+  border: 1px solid var(--line-dark);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 28rem;
+  padding: 2.5rem;
+  position: relative;
+  transform: translateY(20px);
+  transition: transform 0.35s;
+}
+.dispute-modal-overlay.is-open .dispute-modal {
+  transform: translateY(0);
+}
+.dispute-modal h4 {
+  font-family: var(--serif);
+  font-size: 1.8rem;
+  font-weight: 400;
+  margin-bottom: 0.8rem;
+  color: var(--bone);
+}
+.dispute-modal p {
+  font-size: 0.88rem;
+  color: var(--mute-dark);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+}
+.modal-actions button {
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1rem;
+  text-transform: uppercase;
+  padding: 0.95rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-confirm-dispute {
+  background: var(--red);
+  border: 1px solid var(--red);
+  color: var(--bone);
+}
+.btn-confirm-dispute:hover {
+  background: #a93226;
+  transform: scale(0.98);
+}
+.btn-cancel-dispute {
+  background: var(--ink-3);
+  border: 1px solid var(--line-dark);
+  color: var(--bone);
+}
+.btn-cancel-dispute:hover {
+  background: var(--line-dark);
+}

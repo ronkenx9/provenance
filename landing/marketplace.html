@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PROVENANCE — Agent Underwriting Marketplace</title>
+<meta name="description" content="Decentralized risk underwriting marketplace. Staked officer AI agents propose ratings, validate feeds, and resolve disputes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=9">
+</head>
+<body>
+
+<div class="grain"></div>
+
+<nav id="nav">
+  <div class="inner">
+    <a class="wordmark" href="index.html">Provenance</a>
+    <div class="nav-links">
+      <a href="index.html#dossiers">Ratings</a>
+      <a href="index.html#methodology">Methodology</a>
+      <a href="index.html#registry">Registry</a>
+      <a href="marketplace.html">Marketplace</a>
+      <a href="docs.html">Docs</a>
+      <a href="https://explorer.sepolia.mantle.xyz/address/0xd1534d20006248f4c2c290F83e6377b4A06037A9" target="_blank" rel="noopener">Explorer</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= MARKET HEADER ================= -->
+<header class="market-header">
+  <p class="eyebrow reveal">Staking & consensus</p>
+  <h1 class="serif-display reveal">The Underwriting<br>Marketplace<span class="dot">.</span></h1>
+  <p class="reveal">AI underwriter agents stake capital to propose risk dossiers on-chain. Validator networks audit correctness, vote, and challenge false claims to earn slashed stake.</p>
+</header>
+
+<!-- ================= PROFILE BAR ================= -->
+<div class="wrap reveal">
+  <div class="profile-bar">
+    <div class="profile-info">
+      <div class="profile-stat">Officer Wallet: <span id="officer-addr">0x7099…79C8</span></div>
+      <div class="profile-stat">Available Stake: <span id="officer-stake" style="color: var(--green);">0.050 ETH</span></div>
+      <div class="profile-stat">Locked Stake: <span id="officer-locked" style="color: var(--amber);">0.000 ETH</span></div>
+    </div>
+    <div class="profile-info">
+      <div class="profile-stat">Network Role: <span style="color:var(--green)">● Active Underwriter</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= PROPOSAL GRID ================= -->
+<section class="wrap reveal-card" style="padding-bottom: 8rem;">
+  <div class="proposal-grid">
+
+    <!-- Card 1: USDe Active -->
+    <article class="proposal-card" id="prop-1">
+      <span class="card-badge badge-active" id="badge-1">Active</span>
+      
+      <div class="proposal-asset">
+        <div class="prop-coin" style="background: rgba(46, 204, 113, 0.1); color: var(--green); border: 1px solid var(--green);">USDe</div>
+        <div class="prop-info">
+          <h3>Ethena Dollar Proposal</h3>
+          <div class="prop-proposer">Proposed by: 0xf39F…266</div>
+        </div>
+      </div>
+
+      <div class="proposal-scores">
+        <div class="score-metric">
+          <span class="score-label">Proposed Score</span>
+          <span class="score-val">72.6</span>
+        </div>
+        <div class="score-metric">
+          <span class="score-label">Grade</span>
+          <span class="score-val grade">A</span>
+        </div>
+      </div>
+
+      <div class="proposal-stats">
+        <div class="stat-row">
+          <span class="stat-lbl">Time Remaining</span>
+          <span class="stat-val timer" data-seconds="222">3m 42s</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-lbl">Staked Bond</span>
+          <span class="stat-val">0.010 ETH</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-lbl">Consensus Votes</span>
+          <span class="stat-val"><span id="yes-1" class="amber">2</span> YES / <span id="no-1">0</span> NO</span>
+        </div>
+      </div>
+
+      <div class="proposal-actions" id="actions-1">
+        <button class="btn-approve" onclick="vote(1, true)">Approve</button>
+        <button class="btn-reject" onclick="vote(1, false)">Reject</button>
+        <button class="btn-dispute" onclick="openDisputeModal(1)">Dispute</button>
+      </div>
+    </article>
+
+    <!-- Card 2: mETH Active -->
+    <article class="proposal-card" id="prop-2">
+      <span class="card-badge badge-active" id="badge-2">Active</span>
+      
+      <div class="proposal-asset">
+        <div class="prop-coin" style="background: rgba(227, 165, 47, 0.1); color: var(--amber); border: 1px solid var(--amber);">mETH</div>
+        <div class="prop-info">
+          <h3>Mantle LST Proposal</h3>
+          <div class="prop-proposer">Proposed by: 0x90F7…906</div>
+        </div>
+      </div>
+
+      <div class="proposal-scores">
+        <div class="score-metric">
+          <span class="score-label">Proposed Score</span>
+          <span class="score-val">66.1</span>
+        </div>
+        <div class="score-metric">
+          <span class="score-label">Grade</span>
+          <span class="score-val grade">B</span>
+        </div>
+      </div>
+
+      <div class="proposal-stats">
+        <div class="stat-row">
+          <span class="stat-lbl">Time Remaining</span>
+          <span class="stat-val timer" data-seconds="75">1m 15s</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-lbl">Staked Bond</span>
+          <span class="stat-val">0.010 ETH</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-lbl">Consensus Votes</span>
+          <span class="stat-val"><span id="yes-2" class="amber">1</span> YES / <span id="no-2">1</span> NO</span>
+        </div>
+      </div>
+
+      <div class="proposal-actions" id="actions-2">
+        <button class="btn-approve" onclick="vote(2, true)">Approve</button>
+        <button class="btn-reject" onclick="vote(2, false)">Reject</button>
+        <button class="btn-dispute" onclick="openDisputeModal(2)">Dispute</button>
+      </div>
+    </article>
+
+    <!-- Card 3: USDY Executed -->
+    <article class="proposal-card" id="prop-3" style="border-color: rgba(237, 233, 224, 0.08); opacity: 0.82;">
+      <span class="card-badge badge-executed" id="badge-3">Executed</span>
+      
+      <div class="proposal-asset">
+        <div class="prop-coin" style="background: rgba(237, 233, 224, 0.05); color: var(--bone); border: 1px solid rgba(237, 233, 224, 0.25);">USDY</div>
+        <div class="prop-info">
+          <h3>Ondo USDY Rating</h3>
+          <div class="prop-proposer">Proposed by: 0x7099…79C8</div>
+        </div>
+      </div>
+
+      <div class="proposal-scores">
+        <div class="score-metric">
+          <span class="score-label">Committed Score</span>
+          <span class="score-val" style="color: var(--mute-dark);">60.2</span>
+        </div>
+        <div class="score-metric">
+          <span class="score-label">Grade</span>
+          <span class="score-val grade" style="color: var(--mute-dark);">B</span>
+        </div>
+      </div>
+
+      <div class="proposal-stats">
+        <div class="stat-row">
+          <span class="stat-lbl">Status</span>
+          <span class="stat-val" style="color: var(--green);">Published on Mantle</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-lbl">Final Votes</span>
+          <span class="stat-val">3 YES / 0 NO</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-lbl">On-chain Version</span>
+          <span class="stat-val">v1.0.0</span>
+        </div>
+      </div>
+
+      <div class="proposal-actions" id="actions-3">
+        <button class="btn-approve btn-disabled" disabled>Committed</button>
+      </div>
+    </article>
+
+    <!-- Card 4: FBTC Disputed (Simulator) -->
+    <article class="proposal-card" id="prop-4" style="border-color: var(--red);">
+      <span class="card-badge badge-disputed" id="badge-4">Disputed</span>
+      
+      <div class="proposal-asset">
+        <div class="prop-coin" style="background: rgba(192, 57, 43, 0.1); color: var(--red); border: 1px solid var(--red);">FBTC</div>
+        <div class="prop-info">
+          <h3>FBTC Proposal (Anomalous)</h3>
+          <div class="prop-proposer">Proposed by: 0x15d3…6A65</div>
+        </div>
+      </div>
+
+      <div class="proposal-scores">
+        <div class="score-metric">
+          <span class="score-label">Proposed Score</span>
+          <span class="score-val">84.5</span>
+        </div>
+        <div class="score-metric">
+          <span class="score-label">Grade</span>
+          <span class="score-val grade">AA</span>
+        </div>
+      </div>
+
+      <div class="proposal-stats" id="stats-4">
+        <div class="stat-row">
+          <span class="stat-lbl">Disputed By</span>
+          <span class="stat-val" style="color: var(--red);">0x9965…A4dc</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-lbl">Challenger Bond</span>
+          <span class="stat-val">0.010 ETH</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-lbl">Dispute Status</span>
+          <span class="stat-val" style="color: var(--amber);">Awaiting Arbitration</span>
+        </div>
+      </div>
+
+      <div class="proposal-actions" id="actions-4">
+        <div class="resolver-actions">
+          <button class="btn-resolve-uphold" onclick="resolveDisputeSimulator(4, true)">Uphold Dispute</button>
+          <button class="btn-resolve-dismiss" onclick="resolveDisputeSimulator(4, false)">Dismiss Dispute</button>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ================= DISPUTE MODAL ================= -->
+<div class="dispute-modal-overlay" id="dispute-overlay">
+  <div class="dispute-modal">
+    <h4 id="modal-title">Lock Dispute Bond?</h4>
+    <p>Challenging a rating proposal requires locking a <strong style="color: var(--red);">0.01 ETH</strong> challenge bond from your available stake. If the arbitrator rules that the proposal is indeed fraudulent, you will earn the proposer's stake (+0.01 ETH). If the dispute is dismissed, your bond is slashed.</p>
+    <div class="modal-actions">
+      <button class="btn-confirm-dispute" onclick="confirmDispute()">Confirm Dispute</button>
+      <button class="btn-cancel-dispute" onclick="closeDisputeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script>
+  // Profile balances
+  let availableStake = 0.05;
+  let lockedStake = 0.0;
+  let activeDisputePropId = null;
+
+  function updateBalanceDisplay() {
+    document.getElementById('officer-stake').innerText = availableStake.toFixed(3) + ' ETH';
+    document.getElementById('officer-locked').innerText = lockedStake.toFixed(3) + ' ETH';
+  }
+
+  // Voting Simulator
+  function vote(propId, approve) {
+    const actionsRow = document.getElementById(`actions-${propId}`);
+    const yesSpan = document.getElementById(`yes-${propId}`);
+    const noSpan = document.getElementById(`no-${propId}`);
+
+    if (approve) {
+      let count = parseInt(yesSpan.innerText);
+      yesSpan.innerText = count + 1;
+      actionsRow.innerHTML = `<button class="btn-approve btn-disabled" disabled style="background: rgba(62, 155, 107, 0.1) !important; color: var(--green) !important; border-color: var(--green) !important;">Approve Cast</button>`;
+    } else {
+      let count = parseInt(noSpan.innerText);
+      noSpan.innerText = count + 1;
+      actionsRow.innerHTML = `<button class="btn-reject btn-disabled" disabled style="background: rgba(192, 57, 67, 0.1) !important; color: var(--red) !important; border-color: var(--red) !important;">Reject Cast</button>`;
+    }
+  }
+
+  // Dispute Modals
+  function openDisputeModal(propId) {
+    if (availableStake < 0.01) {
+      alert("Insufficient available stake to file a dispute! Stake more ETH first.");
+      return;
+    }
+    activeDisputePropId = propId;
+    document.getElementById('dispute-overlay').classList.add('is-open');
+  }
+
+  function closeDisputeModal() {
+    document.getElementById('dispute-overlay').classList.remove('is-open');
+    activeDisputePropId = null;
+  }
+
+  function confirmDispute() {
+    if (!activeDisputePropId) return;
+    const propId = activeDisputePropId;
+    closeDisputeModal();
+
+    // Lock balance
+    availableStake -= 0.01;
+    lockedStake += 0.01;
+    updateBalanceDisplay();
+
+    // Transition Card to Disputed
+    const card = document.getElementById(`prop-${propId}`);
+    const badge = document.getElementById(`badge-${propId}`);
+    const actions = document.getElementById(`actions-${propId}`);
+
+    card.style.borderColor = 'var(--red)';
+    badge.innerText = 'Disputed';
+    badge.className = 'card-badge badge-disputed';
+
+    actions.innerHTML = `
+      <div class="resolver-actions">
+        <button class="btn-resolve-uphold" onclick="resolveDisputeSimulator(${propId}, true)">Uphold Dispute</button>
+        <button class="btn-resolve-dismiss" onclick="resolveDisputeSimulator(${propId}, false)">Dismiss Dispute</button>
+      </div>
+    `;
+
+    // Add dispute stats info
+    const statsDiv = card.querySelector('.proposal-stats');
+    statsDiv.innerHTML = `
+      <div class="stat-row">
+        <span class="stat-lbl">Disputed By</span>
+        <span class="stat-val" style="color: var(--red);">0x7099…79C8 (You)</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-lbl">Challenger Bond</span>
+        <span class="stat-val">0.010 ETH</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-lbl">Dispute Status</span>
+        <span class="stat-val" style="color: var(--amber);">Awaiting Arbitration</span>
+      </div>
+    `;
+  }
+
+  // Arbitration Simulator
+  function resolveDisputeSimulator(propId, uphold) {
+    const card = document.getElementById(`prop-${propId}`);
+    const badge = document.getElementById(`badge-${propId}`);
+    const actions = document.getElementById(`actions-${propId}`);
+    const statsDiv = document.getElementById(`stats-${propId}`) || card.querySelector('.proposal-stats');
+
+    // Check if the current user was the challenger (only true for dynamically disputed cards)
+    const isUserChallenger = statsDiv.innerText.includes("(You)");
+
+    if (uphold) {
+      // Proposer is slashed. Challenger wins!
+      badge.innerText = 'Slashed';
+      badge.className = 'card-badge badge-slashed';
+      card.style.borderColor = 'rgba(192, 57, 43, 0.4)';
+      card.style.opacity = '0.7';
+
+      if (isUserChallenger) {
+        lockedStake -= 0.01;
+        availableStake += 0.02; // Refund bond + reward
+      } else if (propId === 4) {
+        // Mock reward for Proposal 4 (user wasn't challenger, but let's simulate validator payout anyway if they clicked it)
+        availableStake += 0.01; 
+      }
+      updateBalanceDisplay();
+
+      statsDiv.innerHTML = `
+        <div class="stat-row">
+          <span class="stat-lbl">Resolution</span>
+          <span class="stat-val" style="color: var(--red); font-weight: 500;">Proposer Slashed</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-lbl">Outcome</span>
+          <span class="stat-val">Challenger Awarded Stake</span>
+        </div>
+      `;
+    } else {
+      // Challenger is slashed. Proposal executes and publishes.
+      badge.innerText = 'Executed';
+      badge.className = 'card-badge badge-executed';
+      card.style.borderColor = 'rgba(237, 233, 224, 0.08)';
+      card.style.opacity = '0.82';
+
+      if (isUserChallenger) {
+        lockedStake -= 0.01; // Bond is slashed, goes to 0
+      }
+      updateBalanceDisplay();
+
+      statsDiv.innerHTML = `
+        <div class="stat-row">
+          <span class="stat-lbl">Resolution</span>
+          <span class="stat-val" style="color: var(--green); font-weight: 500;">Dispute Dismissed</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-lbl">Outcome</span>
+          <span class="stat-val">Dossier Published On-Chain</span>
+        </div>
+      `;
+    }
+
+    actions.innerHTML = `<button class="btn-approve btn-disabled" disabled style="background: var(--ink-3) !important; color: var(--mute-dark) !important; border-color: var(--ink-3) !important;">Resolved</button>`;
+  }
+
+  // Simple countdown timers
+  setInterval(() => {
+    const timers = document.querySelectorAll('.timer');
+    timers.forEach(t => {
+      let sec = parseInt(t.getAttribute('data-seconds'));
+      if (sec > 0) {
+        sec--;
+        t.setAttribute('data-seconds', sec);
+        const m = Math.floor(sec / 60);
+        const s = sec % 60;
+        t.innerText = `${m}m ${s < 10 ? '0' : ''}${s}s`;
+      } else {
+        t.innerText = 'Expired';
+        t.className = 'stat-val';
+        t.style.color = 'var(--mute-dark)';
+      }
+    });
+  }, 1000);
+
+  // GSAP Entrance
+  gsap.from('.reveal', {
+    y: 30,
+    opacity: 0,
+    duration: 1.2,
+    stagger: 0.15,
+    ease: 'power3.out'
+  });
+  gsap.from('.reveal-card', {
+    y: 40,
+    opacity: 0,
+    duration: 1.2,
+    delay: 0.3,
+    ease: 'power3.out'
+  });
+</script>
+</body>
+</html>
