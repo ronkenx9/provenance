@@ -13,6 +13,9 @@ rm -rf "$OUT"
 mkdir -p "$OUT/app"
 
 cp landing/index.html landing/marketplace.html landing/docs.html landing/style.css landing/app.js landing/three-assets.js "$OUT/"
+if [ -d landing/assets ]; then
+  cp -R landing/assets "$OUT/assets"
+fi
 cp dist/site/index.html "$OUT/app/index.html"
 
 # Repo-relative viewer links → Pages-relative

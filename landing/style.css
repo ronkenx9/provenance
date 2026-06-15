@@ -124,19 +124,36 @@ nav .inner{
   overflow:hidden;
   background:#000;
 }
-.hero-row{
-  display:flex;align-items:center;justify-content:center;
-  gap:clamp(1.2rem,3vw,3rem);
+.hero-art{
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  background:url('assets/hero-hands-ray.png') center/cover no-repeat;
+  opacity:1;
+  transform:scale(1.04);
 }
-.h-side{white-space:nowrap}
-.hero .eyebrow{color:var(--amber);margin-bottom:2.2rem}
+.hero-row{
+  position:relative;z-index:2;
+  display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  align-items:center;justify-content:center;width:min(100%,82rem);
+  gap:clamp(.5rem,1.6vw,1.8rem);
+  margin-top:clamp(.5rem,2vh,1.5rem);
+  transform:translate(clamp(-3.6rem,-4vw,-1.2rem),clamp(-3rem,-5vh,-1.4rem));
+}
+.h-side{white-space:nowrap;min-width:0}
+.h-left{justify-self:end}
+.h-right{justify-self:start}
+.hero .eyebrow{color:var(--amber);margin-bottom:1.6rem;z-index:3}
 .hero h1{
   font-family:var(--serif);font-weight:400;
-  font-size:clamp(2.6rem,7vw,7rem);
+  font-size:clamp(2.8rem,7.7vw,8.1rem);
   line-height:.96;letter-spacing:-.01em;color:var(--bone);
+  text-shadow:0 20px 70px rgba(0,0,0,.55);
 }
-.hero .sub{margin-top:2.6rem;max-width:30rem;color:var(--mute-dark);font-size:.95rem}
-.hero .cta-row{margin-top:3rem;display:flex;gap:1.6rem;align-items:center}
+.hero .sub{display:none}
+.hero .cta-row{
+  position:absolute;left:0;right:0;bottom:clamp(3.8rem,6.5vh,5.6rem);z-index:4;
+  transform:none;
+  margin-top:0;display:flex;gap:1.6rem;align-items:center;justify-content:center;
+}
 
 .btn-pill{
   font-family:var(--mono);font-size:.68rem;letter-spacing:.18em;
@@ -152,9 +169,11 @@ nav .inner{
 .btn-ghost:hover{color:var(--bone)}
 
 .hero-seal{
-  position:relative;flex:0 0 auto;
-  width:clamp(11rem,22vw,19rem);height:auto;
+  position:relative;flex:0 0 auto;z-index:3;
+  left:clamp(.35rem,.65vw,.75rem);
+  width:clamp(11.2rem,19.5vw,18.4rem);height:auto;
   will-change:transform;pointer-events:none;
+  filter:drop-shadow(0 0 34px rgba(227,165,47,.34)) drop-shadow(0 22px 60px rgba(0,0,0,.76));
 }
 /* —— the eclipse: corona behind the seal —— */
 .hero-seal::before{
@@ -190,7 +209,7 @@ nav .inner{
 @media (prefers-reduced-motion: reduce){
   .hero-seal::before,.hero-seal::after{animation:none}
 }
-.hero>p,.hero>h1,.hero>div:not(.hero-seal){position:relative;z-index:1}
+.hero>p,.hero>h1,.hero>div:not(.hero-seal):not(.hero-art):not(.cta-row){position:relative;z-index:1}
 .seal-spin{animation:sealspin 60s linear infinite}
 @keyframes sealspin{to{transform:rotate(360deg)}}
 
@@ -201,8 +220,12 @@ nav .inner{
 }
 @media(max-height:760px){.hero-scroll{display:none}}
 @media(max-width:760px){
-  .hero-row{flex-direction:column;gap:.6rem}
-  .hero-seal{width:clamp(12rem,46vw,16rem)}
+  .hero-art{background-position:center;opacity:1}
+  .hero-row{display:flex;flex-direction:column;gap:.2rem;width:100%;transform:translate(-.6rem,-1.7rem)}
+  .hero h1{font-size:clamp(3.6rem,18vw,6rem)}
+  .hero-seal{width:clamp(12rem,48vw,16rem);order:2}
+  .h-left{order:1}.h-right{order:3}
+  .hero .cta-row{width:100%;gap:1rem;bottom:4.2rem;flex-wrap:wrap;padding:0 1.25rem}
 }
 .hero-scroll::after{
   content:'';display:block;width:1px;height:34px;
