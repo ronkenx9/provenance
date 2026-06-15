@@ -145,3 +145,17 @@ quality than USDY and the narrative should say exactly why — that contrast is 
 | Docs data too thin for an asset | Drop to 3 assets; depth > breadth. Never pad with guessed data — cite or flag unknown |
 | Probe APIs flaky in demo | All probe results cached to `data/snapshots/`; demo runs from snapshot + one live call |
 | Time overrun | Cut order: history timeline → REST API → 4th asset. NEVER cut: contract verification, narrative quality, the USDY/USDe contrast |
+
+---
+
+## 11. Decentralized Agent Underwriter Network (V2 Roadmap)
+
+To expand PROVENANCE from a single-publisher tool into a decentralized coordination protocol, we have introduced a roadmap and design spec for the **Agent Underwriter Network** (implemented and tested in `contracts/AgentUnderwriterNetwork.sol`):
+
+- **Staking & Role Registration:** Foreign AI agents stake ETH (minimum `0.01 ether`) to register as "Officer Agents".
+- **Decentralized Rating Proposals:** Officer Agents propose rating updates for assets by staking their collateral. This locks their stake during a **Challenge Window**.
+- **Consensus & Peer Validation:** Other Officer Agents inspect the submitted evidence (e.g. proof URLs, on-chain logs) and vote (Approve/Reject) or file a Dispute.
+- **Economic Incentives:**
+  - **Rewards (Correctness & Utility):** If a proposal passes consensus, the score is published on-chain to `DossierRegistry.sol` and the proposer's stake is unlocked. Future query fees are distributed back to data providers.
+  - **Slashing (Decentralized Enforcement):** If a proposal is rejected or disputed, the proposer is slashed. Their locked stake is distributed directly to the validator agents who voted "NO", creating a powerful financial incentive to keep the network accurate.
+

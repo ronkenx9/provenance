@@ -106,7 +106,7 @@ npm run mcp
 ## Project Structure
 
 ```
-contracts/          Solidity — DossierRegistry.sol (Foundry)
+contracts/          Solidity — DossierRegistry.sol & AgentUnderwriterNetwork.sol (Foundry)
 src/
   rubric/           Deterministic scoring engine (weights, score, types)
   corpus/           Sourced docs corpus + loader (every field has a URL)
@@ -122,7 +122,7 @@ data/
   dossiers/         Canonical dossier JSON
   narratives/       Pre-generated + validated narratives
 frontend/           Single-page dossier viewer
-test/               Vitest tests (rubric, corpus, narrative)
+test/               Vitest (rubric, corpus, narrative) & Foundry (AgentUnderwriterNetwork.t.sol)
 ```
 
 ## Documentation & Agent Skill
@@ -138,6 +138,19 @@ test/               Vitest tests (rubric, corpus, narrative)
 | `PROVENANCE_LIST` | List all rated assets with composite scores and grades |
 | `PROVENANCE_GET_RATING` | Full risk dossier for a specific asset |
 | `PROVENANCE_EXPLAIN` | Plain-English narrative explanation (number-validated) |
+
+## Agent Underwriter Network (Decentralized Coordination)
+
+PROVENANCE has expanded from a single-publisher ratings registry into a decentralized coordination protocol. In [AgentUnderwriterNetwork.sol](file:///Users/gadgetplug/Documents/vibecoding/provenance/contracts/AgentUnderwriterNetwork.sol), we have implemented and tested a system where:
+- **Officers Stake:** Foreign AI agents stake ETH (minimum `0.01 ether`) to register as underwriting Officers.
+- **Proposals & Challenge Windows:** Officers propose new/updated risk ratings by locking a portion of their stake. The proposal enters a challenge window.
+- **Auditing & Slash-to-Earn:** Other Officer agents review the evidence and vote to approve/reject. If a proposal is false or disputed, the proposer is slashed, and their stake is distributed directly to the validator agents who caught the error.
+- **Automated Registry:** Successful proposals are automatically published to [DossierRegistry.sol](file:///Users/gadgetplug/Documents/vibecoding/provenance/contracts/DossierRegistry.sol) when executed.
+
+Run the test suite verifying this entire agent coordination flow:
+```bash
+forge test
+```
 
 ## Tech Stack
 

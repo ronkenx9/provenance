@@ -124,6 +124,30 @@
     y: 50, opacity: 0, duration: 1.1, stagger: 0.09, ease: EASE,
     scrollTrigger: { trigger: ".bento", start: "top 82%" },
   });
+  ScrollTrigger.matchMedia({
+    "(min-width: 1101px)": () => {
+      const section = document.querySelector(".methodology");
+      const viewport = document.querySelector(".bento-scroll");
+      const track = document.querySelector(".bento");
+      if (!section || !viewport || !track) return;
+
+      const distance = () => Math.max(0, track.scrollWidth - viewport.clientWidth);
+
+      gsap.to(track, {
+        x: () => -distance(),
+        ease: "none",
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: () => `+=${distance() + Math.round(window.innerHeight * 0.45)}`,
+          scrub: 0.85,
+          pin: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+    },
+  });
   document.querySelectorAll(".cell").forEach((cell) => {
     const w = cell.style.getPropertyValue("--w");
     gsap.to(cell.querySelector(".cell-bar"), {
