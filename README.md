@@ -1,55 +1,54 @@
 # PROVENANCE
 
-The AI ratings agency for tokenized assets. Deterministic, on-chain-anchored risk dossiers that humans can read and agents can act on.
+The decentralized underwriting network for tokenized assets. Staked AI agents coordinate on-chain on Mantle to underwrite risk, audit protocol parameters, and publish verified risk dossiers.
 
 **Mantle Turing Test 2026 — AI x RWA track**
 
-**Live:** [Landing](https://ronkenx9.github.io/provenance/) · [Dossier Viewer](https://ronkenx9.github.io/provenance/app/) · [Docs](https://ronkenx9.github.io/provenance/docs.html) · [Registry on Explorer](https://explorer.sepolia.mantle.xyz/address/0xd1534d20006248f4c2c290F83e6377b4A06037A9)
+**Live:** [Landing & Marketplace](https://ronkenx9.github.io/provenance/) · [Dossier Viewer](https://ronkenx9.github.io/provenance/app/) · [Docs](https://ronkenx9.github.io/provenance/docs.html) · [Registry on Explorer](https://explorer.sepolia.mantle.xyz/address/0xd1534d20006248f4c2c290F83e6377b4A06037A9)
 
-> Every RWA project at this hackathon built a vault. We built the ratings agency that tells you which vaults are safe.
+> Every RWA project at this hackathon built a vault. We built the decentralized underwriting network that tells you which vaults are safe.
 
-## What it does
+## The Protocol: Staked Agent Underwriting
 
-PROVENANCE underwrites tokenized assets with a **deterministic scoring engine** and publishes versioned risk dossiers **on-chain on Mantle**, so any human or agent can check an asset's risk profile before touching it.
+PROVENANCE reframes the concept of a ratings agency into an open, game-theoretically secure oracle network. AI agents coordinate on-chain to maintain risk dossiers:
+- **Officer Agents Stake:** AI agents stake ETH (minimum `0.01 ether`) into the [AgentUnderwriterNetwork.sol](file:///Users/gadgetplug/Documents/vibecoding/provenance/contracts/AgentUnderwriterNetwork.sol) contract to gain Officer status and propose risk rating updates.
+- **Auditing & Staked Dispute Bonds:** Validator agents monitor the proposals feed via the REST API or local MCP server. To challenge a false proposal, validators must lock their own `0.01 ether` dispute bond.
+- **Arbitration & Slashing:** Frivolous disputes or false rating claims are resolved by the arbitrator, slashing the losing party's stake and rewarding it to the correct agent.
+- **On-Chain Registry:** Successful rating proposals are automatically committed to [DossierRegistry.sol](file:///Users/gadgetplug/Documents/vibecoding/provenance/contracts/DossierRegistry.sol), exposing a single-read standard for other Mantle smart contracts and allocators.
 
-Four assets rated in v1: **USDY** (Ondo), **mETH** (Mantle LST), **USDe** (Ethena), **FBTC** — each with different risk profiles, different grades, and different reasons.
+## Deterministic Rubric (Consensus Rules)
 
-## The Anti-Hallucination Defense
+To align agent assessments, all scores are calculated using a strict, mathematical rubric. The LLM never invents a score:
+- **Five dimensions:** Collateral quality (25%), redemption mechanics (20%), liquidity depth (20%), concentration risk (20%), and transparency (15%).
+- **Anti-Hallucination Defense:** The LLM writes only the prose layer. A validator compares every digit in the narrative against computed values, rejecting any mismatches.
+- **Methodology Hash:** Pinned on-chain, ensuring any rubric upgrade is transparent.
 
-**The LLM never produces a score. Ever.**
-
-- Scores come from a deterministic rubric: published weights, quantifiable inputs, reproducible output. Same inputs → same score, verifiable by anyone.
-- Five dimensions: collateral quality (25%), redemption mechanics (20%), liquidity depth (20%), concentration risk (20%), transparency (15%).
-- When data is missing, the engine flags it **unknown** and redistributes weight. It never silently defaults.
-- The methodology hash is anchored on-chain. A rubric change = new version, publicly visible.
-- The LLM writes only the narrative layer (plain-English explanation). Every number in the prose is **validated** against computed values — mismatches trigger regeneration.
+Four assets rated in v1: **USDY** (Ondo), **mETH** (Mantle LST), **USDe** (Ethena), **FBTC** — each with distinct risk shapes, grades, and reasons.
 
 ## Architecture
 
 ```
-┌──────────────────────────────────────────────────┐
-│                  Data Sources                     │
-│  on-chain probes · DEX pools · explorer APIs      │
-│  sourced docs corpus (every field has a URL)       │
-└──────────────────┬───────────────────────────────┘
-                   ▼
-┌──────────────────────────────────────────────────┐
-│           Deterministic Rubric Engine             │
-│  weights.json · score.ts · pure functions         │
-│  same inputs → same output (tested)               │
-└──────────────────┬───────────────────────────────┘
-                   ▼
-┌──────────────────────────────────────────────────┐
-│            DossierRegistry (Solidity)             │
-│  publishDossier() · latest() · history()          │
-│  methodology hash pins the rubric version         │
-└──────────────────┬───────────────────────────────┘
-                   ▼
-┌──────────────────────────────────────────────────┐
-│           Consumption Surfaces                    │
-│  MCP server · REST API · Frontend viewer          │
-│  narratives: LLM-generated, number-validated      │
-└──────────────────────────────────────────────────┘
+ ┌──────────────────────────────────────────────────┐
+ │               Officer AI Agents                  │
+ │  Stake ETH -> Propose dossier score + hashes     │
+ └──────────────────┬───────────────────────────────┘
+                    │ (Challenge Window)
+                    ▼
+ ┌──────────────────────────────────────────────────┐
+ │              Validator AI Agents                 │
+ │  Audit evidence -> Vote or Lock Dispute Bond      │
+ └──────────────────┬───────────────────────────────┘
+                    │ (Consensus or Arbitration)
+                    ▼
+ ┌──────────────────────────────────────────────────┐
+ │         AgentUnderwriterNetwork.sol              │
+ │  Slashes losers · Rewards winners · Publishes    │
+ └──────────────────┬───────────────────────────────┘
+                    ▼
+ ┌──────────────────────────────────────────────────┐
+ │         DossierRegistry (On-Chain)               │
+ │  latest(bytes32) -> score, grade, hashes         │
+ └──────────────────────────────────────────────────┘
 ```
 
 ## Deployed Addresses (Mantle Sepolia — chain 5003)
