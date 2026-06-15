@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PROVENANCE — 60s Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#0C0D10; --ink-2:#16171B; --ink-3:#1E1F24; --line:#2A2B31;
+    --bone:#EDE9E0; --mute:#8B8C93; --mute-2:#5E5F66;
+    --amber:#E3A52F; --amber-deep:#B5811F; --red:#C0392B; --green:#3E9B6B;
+    --serif:'Instrument Serif',serif; --grotesk:'Space Grotesk',sans-serif; --mono:'JetBrains Mono',monospace;
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{background:#000;color:var(--bone);font-family:var(--grotesk);overflow:hidden;-webkit-font-smoothing:antialiased}
+  #film{position:fixed;inset:0;margin:auto;width:min(100vw,177.78vh);height:min(56.25vw,100vh);background:var(--ink);overflow:hidden}
+  .grain{position:absolute;inset:0;z-index:9;pointer-events:none;opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .scrim{position:absolute;inset:0;z-index:8;pointer-events:none;background:linear-gradient(180deg,rgba(12,13,16,.4) 0%,transparent 15%,transparent 80%,rgba(12,13,16,.62) 100%)}
+
+  .barwrap{position:absolute;top:0;left:0;right:0;z-index:12;height:2px;background:rgba(255,255,255,.06)}
+  .bar{height:100%;width:0;background:var(--amber)}
+  .hud{position:absolute;top:15px;left:20px;z-index:12;font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute-2)}
+  .hud b{color:var(--amber);font-weight:500}
+  .clock{position:absolute;top:15px;right:20px;z-index:12;font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--mute-2)}
+
+  .scene{position:absolute;inset:0;opacity:0;visibility:hidden;display:flex;flex-direction:column;justify-content:center;padding:0 clamp(2.2rem,7vw,6rem);transition:opacity .7s var(--ease)}
+  .scene.on{opacity:1;visibility:visible}
+  .eyebrow{font-family:var(--mono);font-size:clamp(9px,1.05vw,12px);letter-spacing:.3em;text-transform:uppercase;color:var(--amber);margin-bottom:1.3rem;display:flex;gap:.7rem;align-items:center}
+  .eyebrow .n{color:var(--mute-2)}
+  h1{font-family:var(--serif);font-weight:400;color:var(--bone);line-height:1.02;letter-spacing:-.01em;font-size:clamp(2.4rem,6.6vw,5.6rem);max-width:18ch}
+  h1 em{font-style:italic;color:var(--amber)}
+  .sub{font-family:var(--grotesk);font-weight:300;font-size:clamp(.9rem,1.7vw,1.4rem);color:var(--mute);max-width:40ch;margin-top:1.4rem;line-height:1.5}
+  .sub b{color:var(--bone);font-weight:400}
+
+  /* S1 hands bg */
+  .handsbg{position:absolute;inset:0;z-index:0;background:url('assets/hero-hands-ray.png') center/cover no-repeat;opacity:0;transition:opacity 1.4s var(--ease),transform 9s linear}
+  .handsmask{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(12,13,16,.35),rgba(12,13,16,.2) 40%,rgba(12,13,16,.75) 100%)}
+
+  /* S2 rubric bars */
+  .rubric{margin-top:1.8rem;display:grid;gap:.85rem;max-width:46rem;z-index:2;position:relative}
+  .dim{display:grid;grid-template-columns:13rem 1fr 3rem;gap:1rem;align-items:center}
+  .dim .nm{font-family:var(--mono);font-size:clamp(10px,1.1vw,13px);color:var(--mute);text-transform:uppercase;letter-spacing:.1em}
+  .dim .nm b{color:var(--mute-2);font-weight:400}
+  .dim .track{height:8px;background:var(--ink-3);position:relative;overflow:hidden}
+  .dim .fillb{position:absolute;inset:0;width:0;background:linear-gradient(90deg,var(--amber-deep),var(--amber));transition:width .8s var(--ease)}
+  .dim .val{font-family:var(--mono);font-size:clamp(11px,1.1vw,14px);color:var(--bone);text-align:right}
+  .rubric-note{font-family:var(--mono);font-size:clamp(9px,1vw,12px);color:var(--mute-2);margin-top:1.2rem;letter-spacing:.04em}
+  .rubric-note b{color:var(--amber)}
+
+  /* S3 grade cards */
+  .grades{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:1.8rem;z-index:2;position:relative}
+  .gcard{background:var(--ink-2);border:1px solid var(--line);padding:1.4rem 1.2rem;opacity:0;transform:translateY(16px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+  .gcard.on{opacity:1;transform:none}
+  .gcard .sym{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--mute);text-transform:uppercase}
+  .gcard .grade{font-family:var(--serif);font-size:clamp(2.4rem,4.6vw,3.6rem);line-height:1;margin:.5rem 0 .3rem}
+  .gcard .grade.A{color:var(--green)} .gcard .grade.B{color:var(--amber)}
+  .gcard .score{font-family:var(--mono);font-size:13px;color:var(--bone)}
+  .gcard .risk{font-family:var(--grotesk);font-weight:300;font-size:clamp(10px,1vw,12.5px);color:var(--mute);margin-top:.8rem;line-height:1.4}
+  .spread{font-family:var(--mono);font-size:clamp(10px,1.05vw,13px);letter-spacing:.06em;color:var(--mute-2);margin-top:1.4rem;z-index:2;position:relative}
+  .spread b{color:var(--amber)}
+
+  /* S4 network flow */
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:2rem;z-index:2;position:relative;max-width:64rem}
+  .node{text-align:center;position:relative;opacity:.3;transition:opacity .5s var(--ease)}
+  .node.on{opacity:1}
+  .node .ic{width:54px;height:54px;margin:0 auto 1rem;border:1px solid var(--line);display:grid;place-items:center;font-family:var(--serif);font-size:1.5rem;color:var(--amber);background:var(--ink-2)}
+  .node.on .ic{border-color:var(--amber)}
+  .node h3{font-family:var(--grotesk);font-weight:500;font-size:clamp(.85rem,1.3vw,1.05rem);color:var(--bone);margin-bottom:.4rem}
+  .node p{font-family:var(--mono);font-size:clamp(9px,.95vw,11px);color:var(--mute);line-height:1.5;letter-spacing:.02em}
+  .node::after{content:"→";position:absolute;right:-.5rem;top:18px;color:var(--mute-2);font-family:var(--mono)}
+  .node:last-child::after{display:none}
+  .node.slash .ic{color:var(--red);border-color:var(--red)}
+
+  /* S5 registry read */
+  .reg{margin-top:1.8rem;background:#0A0B0E;border:1px solid var(--line);max-width:54rem;z-index:2;position:relative;font-family:var(--mono)}
+  .reg .top{display:flex;justify-content:space-between;padding:.8rem 1.2rem;border-bottom:1px solid var(--line);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute-2)}
+  .reg .top .v{color:var(--green)}
+  .reg .body{padding:1.3rem 1.2rem;font-size:clamp(11px,1.15vw,14px);line-height:2}
+  .reg .ln{opacity:0;transform:translateX(-6px);transition:opacity .4s var(--ease),transform .4s var(--ease)}
+  .reg .ln.on{opacity:1;transform:none}
+  .reg .k{color:var(--amber)} .reg .c{color:var(--mute-2)} .reg .s{color:var(--bone)} .reg .g{color:var(--green)}
+
+  /* S6 close */
+  .closewrap{text-align:center;align-items:center;display:flex;flex-direction:column;z-index:2;position:relative}
+  .closewrap img{height:clamp(90px,15vh,150px);width:auto;margin-bottom:1.4rem}
+  .closewrap h1{text-align:center;max-width:20ch;font-size:clamp(2rem,5vw,4rem)}
+  .closewrap .meta{font-family:var(--mono);font-size:clamp(9px,1vw,12px);letter-spacing:.18em;text-transform:uppercase;color:var(--mute-2);margin-top:1.8rem;line-height:2}
+  .closewrap .meta b{color:var(--green);font-weight:500}
+  .closeglow{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse 50% 45% at 50% 42%,rgba(227,165,47,.16),transparent 70%);opacity:0;transition:opacity 1.6s var(--ease)}
+  .closeglow.on{opacity:1}
+
+  .cap{position:absolute;left:0;right:0;bottom:5.5%;z-index:11;text-align:center;padding:0 9%;font-family:var(--grotesk);font-weight:300;font-size:clamp(.85rem,1.55vw,1.3rem);color:var(--bone);opacity:0;transition:opacity .5s var(--ease);text-shadow:0 2px 20px rgba(0,0,0,.95)}
+  .cap.on{opacity:1}
+
+  .ctrl{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);z-index:13;display:flex;gap:.6rem}
+  .ctrl button{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--bone);background:var(--ink-2);border:1px solid var(--line);padding:.5rem 1.1rem;cursor:pointer}
+  .ctrl button:hover{background:var(--amber);color:var(--ink);border-color:var(--amber)}
+  body.clean .ctrl,body.clean .hud,body.clean .clock{display:none}
+  @media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div id="film">
+  <div class="barwrap"><div class="bar" id="bar"></div></div>
+  <div class="hud">PROVENANCE <b>·</b> demo film</div>
+  <div class="clock" id="clock">00:00 / 01:00</div>
+
+  <!-- S1 HOOK -->
+  <section class="scene" data-i="0">
+    <div class="handsbg" id="handsbg"></div><div class="handsmask"></div>
+    <div style="position:relative;z-index:2">
+      <div class="eyebrow"><span class="n">01</span> AI x RWA · Mantle</div>
+      <h1>Every project built a vault. Which ones are <em>safe</em>?</h1>
+      <p class="sub"><b>$10B in tokenized assets, zero independent ratings.</b> An AI agent about to allocate can't read a PDF prospectus.</p>
+    </div>
+  </section>
+
+  <!-- S2 RUBRIC -->
+  <section class="scene" data-i="1">
+    <div class="eyebrow"><span class="n">02</span> The deterministic rubric</div>
+    <h1 style="font-size:clamp(1.8rem,4.4vw,3.2rem)">Scores are computed, not invented.</h1>
+    <div class="rubric" id="rubric">
+      <div class="dim"><span class="nm">Collateral <b>25%</b></span><div class="track"><div class="fillb" data-w="90"></div></div><span class="val">90</span></div>
+      <div class="dim"><span class="nm">Redemption <b>20%</b></span><div class="track"><div class="fillb" data-w="73"></div></div><span class="val">73</span></div>
+      <div class="dim"><span class="nm">Liquidity <b>20%</b></span><div class="track"><div class="fillb" data-w="10"></div></div><span class="val">10</span></div>
+      <div class="dim"><span class="nm">Concentration <b>20%</b></span><div class="track"><div class="fillb" data-w="61"></div></div><span class="val">61</span></div>
+      <div class="dim"><span class="nm">Transparency <b>15%</b></span><div class="track"><div class="fillb" data-w="80"></div></div><span class="val">80</span></div>
+    </div>
+    <p class="rubric-note">USDY · every adjustment logged & auditable · <b>the LLM writes only the prose — a validator rejects any digit it can't match</b></p>
+  </section>
+
+  <!-- S3 GRADES -->
+  <section class="scene" data-i="2">
+    <div class="eyebrow"><span class="n">03</span> Four assets, four risk shapes</div>
+    <h1 style="font-size:clamp(1.8rem,4.4vw,3.2rem)">The rubric discriminates.</h1>
+    <div class="grades" id="grades">
+      <div class="gcard"><span class="sym">USDY · Ondo</span><div class="grade B">B</div><span class="score">60.2</span><p class="risk">Critically thin Mantle DEX liquidity — ~$5k TVL</p></div>
+      <div class="gcard"><span class="sym">mETH · Mantle</span><div class="grade B">B</div><span class="score">66.1</span><p class="risk">4-day unstaking + issuer-chain correlation</p></div>
+      <div class="gcard"><span class="sym">USDe · Ethena</span><div class="grade A">A</div><span class="score">72.6</span><p class="risk">Synthetic collateral: basis & funding-rate risk</p></div>
+      <div class="gcard"><span class="sym">FBTC</span><div class="grade A">A</div><span class="score">76.7</span><p class="risk">No sourced redemption path; custodian dependency</p></div>
+    </div>
+    <p class="spread">Spread <b>16.5 points</b> across two grade bands — real data, no fudging.</p>
+  </section>
+
+  <!-- S4 NETWORK -->
+  <section class="scene" data-i="3">
+    <div class="eyebrow"><span class="n">04</span> Staked agent underwriting</div>
+    <h1 style="font-size:clamp(1.8rem,4.4vw,3.2rem)">A ratings agency with skin in the game.</h1>
+    <div class="flow" id="flow">
+      <div class="node"><div class="ic">⌾</div><h3>Stake</h3><p>Officer agents stake 0.01 ETH to propose a rating</p></div>
+      <div class="node"><div class="ic">⊘</div><h3>Challenge</h3><p>Validators lock a dispute bond to contest it</p></div>
+      <div class="node slash"><div class="ic">✕</div><h3>Slash</h3><p>Arbitration slashes the losing side's stake</p></div>
+      <div class="node"><div class="ic">✓</div><h3>Publish</h3><p>Survivors commit to the on-chain registry</p></div>
+    </div>
+  </section>
+
+  <!-- S5 ON-CHAIN -->
+  <section class="scene" data-i="4">
+    <div class="eyebrow"><span class="n">05</span> One read, on Mantle</div>
+    <h1 style="font-size:clamp(1.8rem,4.4vw,3.2rem)">Any contract can ask: is this safe?</h1>
+    <div class="reg">
+      <div class="top"><span>DossierRegistry · 0xd1534d20…37A9 · Mantle Sepolia</span><span class="v">● Sourcify exact match</span></div>
+      <div class="body" id="regbody">
+        <div class="ln"><span class="c">›</span> <span class="k">latest</span>(<span class="s">keccak256("USDe")</span>)</div>
+        <div class="ln"><span class="c">  →</span> score <span class="s">726</span> <span class="c">·</span> grade <span class="g">A</span> <span class="c">·</span> version <span class="s">1</span></div>
+        <div class="ln"><span class="c">  →</span> dossierHash <span class="s">0x9f2c…a14e</span></div>
+        <div class="ln"><span class="c">  →</span> methodologyHash <span class="s">0x4b8d…c071</span> <span class="c">(rubric pinned on-chain)</span></div>
+        <div class="ln"><span class="g">  ✓ verifiable · machine-readable · upgrade = new methodology, never a silent edit</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S6 CLOSE -->
+  <section class="scene" data-i="5">
+    <div class="closeglow" id="closeglow"></div>
+    <div class="closewrap">
+      <img src="assets/logo.png" alt="PROVENANCE" />
+      <h1>The underwriting network for <em>tokenized assets</em>.</h1>
+      <div class="meta">Deterministic ratings · staked agent consensus · anchored on Mantle · <b>live & verified</b></div>
+    </div>
+  </section>
+
+  <div class="cap" id="cap"></div>
+  <div class="scrim"></div><div class="grain"></div>
+  <div class="ctrl"><button id="replay">↻ Replay</button><button id="pause">❚❚ Pause</button></div>
+</div>
+
+<script>
+(() => {
+  const clean = new URLSearchParams(location.search).has("clean");
+  if (clean) document.body.classList.add("clean");
+  const DUR = 60000;
+  const scenes = [...document.querySelectorAll(".scene")];
+  const bar = document.getElementById("bar"), clock = document.getElementById("clock"), cap = document.getElementById("cap");
+  const W = [[0,9000],[9000,20000],[20000,32000],[32000,43000],[43000,52000],[52000,60000]];
+  const CAPS = [
+    [600,8500,"Ten billion dollars in tokenized assets — and no independent way to know which are safe."],
+    [9500,19500,"PROVENANCE scores every asset on a deterministic rubric. The AI writes the words; the math writes the grade."],
+    [20500,31500,"Four assets, four risk shapes — USDY's pristine T-bills hide near-zero on-chain exit liquidity."],
+    [32500,42500,"Ratings are proposed by staked agents and policed by disputes. Get it wrong, get slashed."],
+    [43500,51500,"Every grade is one contract call away — anchored on Mantle, with the methodology pinned on-chain."],
+    [52500,59800,"PROVENANCE — the underwriting network for tokenized assets. Live on Mantle."],
+  ];
+  const handsbg=document.getElementById("handsbg"), rubric=document.getElementById("rubric"),
+        grades=[...document.querySelectorAll("#grades .gcard")], flow=[...document.querySelectorAll("#flow .node")],
+        regln=[...document.querySelectorAll("#regbody .ln")], closeglow=document.getElementById("closeglow"),
+        fills=[...document.querySelectorAll("#rubric .fillb")];
+  let start=null, paused=false, raf;
+  const fmt=ms=>`00:${String(Math.floor(ms/1000)).padStart(2,"0")}`;
+
+  function frame(now){
+    if(start===null) start=now;
+    const t=Math.min(DUR, now-start);
+    bar.style.width=(t/DUR*100)+"%"; clock.textContent=`${fmt(t)} / 01:00`;
+    let active=0; for(let i=0;i<W.length;i++) if(t>=W[i][0]&&t<W[i][1]) active=i;
+    if(t>=DUR) active=5;
+    scenes.forEach((s,i)=>s.classList.toggle("on", i===active));
+    const c=CAPS.find(c=>t>=c[0]&&t<c[1]);
+    if(c){ if(cap.textContent!==c[2]) cap.textContent=c[2]; cap.classList.add("on"); } else cap.classList.remove("on");
+
+    if(active===0){ const p=(t-W[0][0])/(W[0][1]-W[0][0]); handsbg.style.opacity=Math.min(1,p*2.5); handsbg.style.transform=`scale(${1+p*0.06})`; }
+    if(active===1){ const p=(t-W[1][0])/(W[1][1]-W[1][0]); if(p>.15) fills.forEach(f=>f.style.width=f.dataset.w+"%"); }
+    if(active===2){ const p=(t-W[2][0])/(W[2][1]-W[2][0]); const show=Math.floor(p*grades.length*1.4); grades.forEach((g,i)=>g.classList.toggle("on",i<=show)); }
+    if(active===3){ const p=(t-W[3][0])/(W[3][1]-W[3][0]); const show=Math.floor(p*flow.length*1.3); flow.forEach((n,i)=>n.classList.toggle("on",i<=show)); }
+    if(active===4){ const p=(t-W[4][0])/(W[4][1]-W[4][0]); const show=Math.floor(p*regln.length*1.5); regln.forEach((l,i)=>l.classList.toggle("on",i<=show)); }
+    if(active===5){ closeglow.classList.add("on"); }
+    if(!paused) raf=requestAnimationFrame(frame);
+  }
+  function play(){ start=null; paused=false; fills.forEach(f=>f.style.width="0"); cancelAnimationFrame(raf); raf=requestAnimationFrame(frame); }
+  document.getElementById("replay").onclick=play;
+  const pb=document.getElementById("pause");
+  pb.onclick=()=>{ paused=!paused; pb.textContent=paused?"▶ Play":"❚❚ Pause"; if(!paused){ start=performance.now()-(parseFloat(bar.style.width)/100*DUR); raf=requestAnimationFrame(frame);} };
+  addEventListener("keydown",e=>{ if(e.key===" "){e.preventDefault();pb.click();} if(e.key==="r")play(); });
+  play();
+})();
+</script>
+</body>
+</html>
